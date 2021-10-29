@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 18:09:56
+# @LastEditTime : 2021-10-29 19:22:05
 # @Description  : 用户表
 '''
 
@@ -20,8 +20,10 @@ class Users(Model):
 
     level = fields.ForeignKeyField(
         model_name="models.Levels", related_name="users")  # 用户等级
-    right = fields.ManyToManyField(
+    right = fields.ForeignKeyField(
         model_name="models.Rights", related_name="users")  # 用户权限
+    badge = fields.ManyToManyField(
+        model_name="models.Badges", related_name="users",through="users_badges")  # 用户权限
 
     accept_count = fields.IntField(default=0)  # 过审投稿数
     reject_count = fields.IntField(default=0)  # 被毙投稿数

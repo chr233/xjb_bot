@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 19:06:18
+# @LastEditTime : 2021-10-29 13:52:24
 # @Description  : 
 '''
 from enum import IntEnum
@@ -13,9 +13,10 @@ from tortoise import fields
 
 class Rate_Choose(IntEnum):
     Default = 0
-    DISLIKE = 1
-    CAO = 2
-    LIKE = 3
+    LIKE = 1     # 喜欢
+    CAO = 2      # 生草
+    MARS = 3     # 火星
+    DISLIKE = 4  # 不喜欢
 
 
 class Ratings(Model):

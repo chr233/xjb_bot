@@ -2,78 +2,46 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 20:10:32
+# @LastEditTime : 2021-10-29 19:48:47
 # @Description  : 
 '''
 
-import asyncio
-import sys
-from loguru import logger
+from aiogram import Bot, Dispatcher, executor
 
-from aiogram.dispatcher import filters
-from aiogram.types.message import ContentType
-from aiogram import Bot, Dispatcher, executor, types, md
+from config import CFG, Bot_Modes
 
-from tortoise import run_async, Tortoise
+from db import init_orm, close_orm
 
-from config import CFG
-
-# print(CFG)
-
-API_TOKEN = CFG.Bot_Token
+from user import setup as user_setup
+from admin import setup as admin_setup
 
 
-bot = Bot(token=CFG.Bot_Token)
-dp = Dispatcher(bot)
-
-
-@dp.message_handler(content_types=ContentType.ANY)
-async def echo(message: types.Message):
-    print(message.content_type)
-
-    media = types.MediaGroup()
-
-    if message.content_type == ContentType.PHOTO:
-        for i in message.photo:
-            print(i.file_id)
-
-    await message.reply("message.text")
-
-
-def startup(generate_schemas: bool = False):
+def main():
     '''启动函数'''
-    async def init_orm(dp) -> None:  # pylint: disable=W0612
-        await Tortoise.init(
-            db_url=CFG.DB_URL,
-            modules={
-                'models': [
-                    'models.badge',
-                    'models.level',
-                    'models.post',
-                    'models.rating',
-                    'models.reason',
-                    'models.right',
-                    'models.tag',
-                    'models.user',
-                ]
-            }
+
+    bot = Bot(token=CFG.Bot_Token)
+    dispatcher = Dispatcher(bot)
+
+    startups = [
+        init_orm,
+        user_setup,
+        admin_setup,
+    ]
+    shutdowns = [close_orm]
+
+    if CFG.Bot_Mode == Bot_Modes.P:
+        executor.start_polling(
+            dispatcher,
+            on_startup=startups,
+            on_shutdown=shutdowns
         )
-        logger.info("Tortoise-ORM started")
-        if generate_schemas:
-            logger.info("Tortoise-ORM generating schema")
-            await Tortoise.generate_schemas()
-
-    async def close_orm(dp) -> None:  # pylint: disable=W0612
-        await Tortoise.close_connections()
-        logger.info("Tortoise-ORM shutdown")
-
-    executor.start_polling(
-        dp,
-        skip_updates=True,
-        on_startup=init_orm,
-        on_shutdown=close_orm
-    )
+    else:
+        executor.start_webhook(
+            dispatcher,
+            on_startup=startups,
+            on_shutdown=shutdowns
+        )
 
 
 if __name__ == '__main__':
-    startup(generate_schemas=False)
+    main()

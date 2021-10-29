@@ -3,14 +3,22 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 17:14:26
+# @LastEditTime : 2021-10-29 14:14:58
 # @Description  : 全局配置
 '''
 
-from typing import List
+from enum import Enum
+from typing import List, Union
 from pydantic import BaseSettings as BS
 
 VERSION = '1.0.0'
+
+
+class Bot_Modes(Enum):
+    P: str = 'P'
+    Polling: str = 'P'
+    W: str = 'W'
+    Webhook: str = 'W'
 
 
 class Config(BS):
@@ -18,7 +26,11 @@ class Config(BS):
 
     DB_URL: str = 'sqlite://data.db'
 
-    PROXY: str = None
+    Generate_Schemas: bool = True
+
+    PROXY: Union[str, None] = None
+
+    Bot_Mode: Bot_Modes = Bot_Modes.P
 
     Bot_Token: str = ''
 
