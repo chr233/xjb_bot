@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 19:05:29
+# @LastEditTime : 2021-10-31 00:13:15
 # @Description  :
 '''
 
@@ -14,6 +14,7 @@ class Base_Posts(Model):
     '''基础稿件模型'''
 
     id = fields.IntField(pk=True)
+    message_id =fields.IntField(unique=True,index=True)
     anymouse = fields.BooleanField(default=False)  # 是否匿名
     author = fields.ForeignKeyField(
         model_name='models.Users',  on_delete=fields.CASCADE)  # 投稿人

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-29 13:52:24
+# @LastEditTime : 2021-10-31 13:16:08
 # @Description  : 
 '''
 from enum import IntEnum
@@ -32,5 +32,7 @@ class Ratings(Model):
     value = fields.IntEnumField(
         enum_type=Rate_Choose, default=Rate_Choose.Default)  # 评分值
 
-    created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    
+    class Mate:
+        table = "ratings"

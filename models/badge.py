@@ -2,12 +2,14 @@
 # @Author       : Chr_
 # @Date         : 2021-10-28 12:17:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 12:42:33
+# @LastEditTime : 2021-10-31 14:24:43
 # @Description  : 
 '''
 
 from tortoise.models import Model
 from tortoise import fields
+
+# from .user import Users
 
 
 class Badges(Model):
@@ -23,5 +25,13 @@ class Badges(Model):
 
     reach_count = fields.IntField(default=0)  # 达成人数
 
-    created_at = fields.DatetimeField(auto_now_add=True)
+    users: fields.ManyToManyRelation["Users"]
+    
     modified_at = fields.DatetimeField(auto_now=True)
+
+
+    class Mate:
+        table = "badges"
+    
+    def __str__(self) -> str:
+        return f'徽章 {self.id} | {self.disp_name} | {self.reach_count}'

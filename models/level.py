@@ -2,21 +2,31 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 22:29:09
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-28 12:38:21
+# @LastEditTime : 2021-10-31 14:24:29
 # @Description  : 
 '''
 
 from tortoise.models import Model
 from tortoise import fields
 
+# from .user import Users
 
 class Levels(Model):
     id = fields.IntField(pk=True)
+    
+    default = fields.BooleanField(default=False) # 是否为默认
+    
     disp_name = fields.CharField(max_length=20)
 
-    min_exp = fields.IntField(default=-1)
-    max_exp = fields.IntField(default=-1)
+    min_exp = fields.IntField(default=-1) #自动升级的最低经验
+    max_exp = fields.IntField(default=-1) #自动取消的最高经验
     
-
-    created_at = fields.DatetimeField(auto_now_add=True)
-    modified_at = fields.DatetimeField(auto_now=True)
+    reach_count = fields.IntField(default=0)  # 达成人数
+ 
+    users:fields.ReverseRelation["Users"]
+ 
+    class Mate:
+        table = "levels"
+        
+    def __str__(self) -> str:
+        return f'等级 {self.id} | {self.disp_name} | {self.reach_count}'
