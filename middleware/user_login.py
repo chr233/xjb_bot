@@ -2,9 +2,10 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:29:31
+# @LastEditTime : 2021-10-31 14:56:10
 # @Description  : 
 '''
+from aiogram.dispatcher.handler import CancelHandler
 from loguru import logger
 
 from aiogram import types
@@ -26,7 +27,7 @@ class User_Login(BaseMiddleware):
     ready = False
     default_level: Levels = None
     default_right: Rights = None
-    
+
     def __init__(self):
         logger.info('User login middleware loaded')
         super().__init__()
@@ -45,7 +46,16 @@ class User_Login(BaseMiddleware):
         unick = from_user.full_name
         uname = from_user.mention
 
-        message.user = await self.get_user(uid, unick, uname)
+        user = await self.get_user(uid, unick, uname)
+
+        if user.is_ban:
+            logger.debug(f'阻止被Ban用户 {user}')
+            raise CancelHandler()
+
+        right = await user.right.get()
+        
+        message.user = user
+        message.right = right
 
     async def get_user(self, user_id: str, user_nick: str, user_name: str):
         user = await Users.get_or_none(user_id=user_id)
@@ -58,10 +68,10 @@ class User_Login(BaseMiddleware):
                 right=self.default_right,
                 level=self.default_level
             )
-            
+
             self.default_level.reach_count += 1
             await self.default_level.save()
-            
+
             logger.debug(f'创建新用户 {user}')
 
         if (user.user_nick != user_nick) or (user.user_id != user_id):

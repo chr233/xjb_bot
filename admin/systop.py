@@ -2,30 +2,28 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 19:37:48
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-29 19:51:22
+# @LastEditTime : 2021-10-31 15:42:24
 # @Description  : 服务器监控
 '''
 
+from os import path
+from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
 from datetime import datetime
 from platform import uname
 from typing import Tuple
-from aiogram.types.base import InputFile
 from aiogram.types.message import Message
 from distro import linux_distribution
 from psutil import boot_time, getloadavg, net_io_counters
 from psutil import cpu_count, cpu_freq, cpu_percent
 from psutil import virtual_memory, disk_usage, disk_partitions
 
-from os import path
-from PIL import Image, ImageFont, ImageDraw
-
 FONT_PATH = path.join('res', 'sarasa-mono-sc-semibold.ttf')
 
 
 async def cmd_systop(message: Message):
     f = draw_usage_data(get_system_data(), get_usage_data())
-    
+
     await message.reply_photo(photo=f, caption='系统状态')
 
 
