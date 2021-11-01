@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:56:10
+# @LastEditTime : 2021-10-31 19:43:09
 # @Description  : 
 '''
 from aiogram.dispatcher.handler import CancelHandler
@@ -42,12 +42,17 @@ class User_Login(BaseMiddleware):
 
         from_user = message.from_user
 
+
         uid = str(from_user.id)
         unick = from_user.full_name
         uname = from_user.mention
 
         user = await self.get_user(uid, unick, uname)
 
+        if from_user.is_bot:
+            logger.debug(f'阻止机器人用户 @{uname} {unick}')
+            return CancelHandler()
+        
         if user.is_ban:
             logger.debug(f'阻止被Ban用户 {user}')
             raise CancelHandler()
