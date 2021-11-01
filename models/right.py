@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 22:29:09
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:23:21
+# @LastEditTime : 2021-10-31 19:00:20
 # @Description  : 
 '''
 
@@ -18,8 +18,6 @@ class Rights(Model):
     
     disp_name = fields.CharField(max_length=20)  # 权限名称
 
-    is_ban =  fields.BooleanField(default=True)  
-
     can_post = fields.BooleanField(default=True)  # 是否可以投稿
     can_rating = fields.BooleanField(default=True)  # 是否可以评分
     can_review = fields.BooleanField(default=False)  # 是否可以审稿
@@ -30,11 +28,10 @@ class Rights(Model):
     can_use_admin_cmd = fields.BooleanField(default=False)  # 是否可以使用管理命令
     can_use_super_cmd = fields.BooleanField(default=False)  # 是否可以使用管理命令
     
-    
     users:fields.ReverseRelation["Users"]
     
     class Mate:
         table = "rights"
         
     def __str__(self) -> str:
-        return f'权限 @{self.id} {self.disp_name}'
+        return f'@{self.id} {self.disp_name}'

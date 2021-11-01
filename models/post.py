@@ -2,73 +2,151 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 00:13:15
+# @LastEditTime : 2021-11-01 22:10:50
 # @Description  :
 '''
 
 from tortoise.models import Model
 from tortoise import fields
+from enum import IntEnum
 
 
-class Base_Posts(Model):
-    '''基础稿件模型'''
+from utils import custom_fields
+
+
+class Post_Status(IntEnum):
+    Unknown = 0    # 默认状态
+    Reviewing = 1  # 已投稿,待审核
+    Revoke = 2     # 被撤回
+    Rejected = 3   # 投稿未过审
+    Accepted = 4   # 已过审并发布
+    Wating = 5     # 已过审但是等待发布(色图排期)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Posts(Model):
+    '''投稿稿件模型'''
 
     id = fields.IntField(pk=True)
-    message_id =fields.IntField(unique=True,index=True)
+
+    origin_mid = fields.IntField(unique=True, index=True)  # 投稿的原消息ID
+    action_mid = fields.IntField(unique=True, index=True)  # 投稿动作消息ID
+    review_mid = fields.IntField(unique=True, index=True)  # 审核群消息ID
+    manage_mid = fields.IntField(unique=True, index=True)  # 审核动作消息ID
+
     anymouse = fields.BooleanField(default=False)  # 是否匿名
-    author = fields.ForeignKeyField(
-        model_name='models.Users',  on_delete=fields.CASCADE)  # 投稿人
-    operater = fields.CharField(max_length=255, default='')  # 审核人
-    real_author = fields.CharField(max_length=255, default='')  # 转发消息的原作者
-    describe = fields.CharField(max_length=255)  # 描述
-    media_content = fields.TextField()  # 文件列表
-    tags = fields.TextField()  # 标签列表
+
+    poster: fields.ForeignKeyRelation["Users"] = fields.ForeignKeyField(
+        model_name='models.Users', related_name='posts',
+        on_delete=fields.CASCADE
+    )  # 投稿人
+
+    status = fields.IntEnumField(
+        enum_type=Post_Status, default=Post_Status.Unknown
+    )  # 稿件状态
+
+    caption = fields.CharField(max_length=255, default='')  # 文字说明
+
+    tags = fields.CharField(max_length=255, default='')  # 标签列表
+
+    source = custom_fields.LinkObjField(default='')  # 消息来源,为空代表消息来自投稿者
+    files = custom_fields.FileObjField(default='')  # 文件列表
+
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 
-    class Mate:
-        abstract = True
-
-
-class Review_Posts(Base_Posts):
-    '''待审核稿件模型,允许投票'''
-
-    agree = fields.IntField(default=0)  # 通过
-    disagree = fields.IntField(default=0)  # 拒绝
-
-    vote_count = fields.IntField(default=0)  # 投票总数
-    vote_percent = fields.FloatField(default=0)  # 总评分
+    public_post: fields.ReverseRelation["Public_Posts"]
+    reject_post: fields.ReverseRelation["Reject_Posts"]
+    wanan_list: fields.ReverseRelation["Wanan_Posts"]
 
     class Mate:
-        table = "posts_review"
+        table = "posts"
+
+    def __str__(self) -> str:
+        return f'@{self.id} {self.status} {self.caption}'
 
 
-class Rejected_Posts(Base_Posts):
-    '''未过审稿件模型,记录原因'''
+class Public_Posts(Model):
+    '''通过审核并发布的稿件模型'''
 
-    reason = fields.CharField(max_length=255, default='')  # 拒稿原因
+    id = fields.IntField(pk=True)
 
-    class Mate:
-        table = "posts_rejected"
+    message_id = fields.IntField(unique=True, index=True)  # 频道广播消息ID
 
+    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+        model_name='models.Posts', related_name='public_post', to_field='id',
+        on_delete=fields.CASCADE
+    )  # 被审核的原消息ID
 
-class Accepted_Posts(Base_Posts):
-    '''过审稿件模型,允许评分'''
+    reviewer: fields.ForeignKeyRelation["Users"] = fields.ForeignKeyField(
+        model_name='models.Users', related_name='reviews',
+        on_delete=fields.CASCADE
+    )  # 审核人
 
+    # 评价
     like = fields.IntField(default=0)  # 好评数
     gress = fields.IntField(default=0)  # 生草数
+    mars = fields.IntField(default=0)  # 火星数
     dislike = fields.IntField(default=0)  # 差评数
 
     rating_count = fields.IntField(default=0)  # 评价总数
     rating_score = fields.FloatField(default=0)  # 总评分
 
-    class Mate:
-        table = "posts_accpeted"
+    created_at = fields.DatetimeField(auto_now_add=True)
+    modified_at = fields.DatetimeField(auto_now=True)
 
-
-class Accepted_NSFW_Posts(Base_Posts):
-    '''过审NSFW稿件模型
-    只会在特定时间自动发送'''
+    ratings: fields.ReverseRelation["Ratings"]
 
     class Mate:
-        table = "posts_accepted_nsfw"
+        table = "public_posts"
+
+    def __str__(self) -> str:
+        return f'@{self.id} [{self.like} / {self.dislike} , {self.gress} , {self.mars}]'
+
+
+class Reject_Posts(Model):
+    '''被拒绝的稿件模型'''
+
+    id = fields.IntField(pk=True)
+
+    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+        model_name='models.Posts', related_name='reject_post', to_field='id',
+        on_delete=fields.CASCADE
+    )  # 被审核的原消息ID
+
+    reviewer: fields.ForeignKeyRelation["Users"] = fields.ForeignKeyField(
+        model_name='models.Users', related_name='reviews_reject',
+        on_delete=fields.CASCADE
+    )  # 审核人
+
+    reason = fields.CharField(max_length=255, default='')  # 拒绝理由
+
+    created_at = fields.DatetimeField(auto_now_add=True)
+    modified_at = fields.DatetimeField(auto_now=True)
+
+    class Mate:
+        table = "reject_posts"
+
+    def __str__(self) -> str:
+        return f'@{self.id} {self.reason}'
+
+
+class Wanan_Posts(Model):
+    '''晚安稿件发送队列,发送后记得在该表中删除'''
+
+    id = fields.IntField(pk=True)
+    
+    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+        model_name='models.Posts', related_name='wanan_list', to_field='id',
+        on_delete=fields.CASCADE
+    )
+
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    class Mate:
+        table = "wanan_list"
+
+    def __str__(self) -> str:
+        return f'@{self.id} {self.reason}'

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 22:29:09
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:24:29
+# @LastEditTime : 2021-10-31 14:55:26
 # @Description  : 
 '''
 
@@ -29,4 +29,4 @@ class Levels(Model):
         table = "levels"
         
     def __str__(self) -> str:
-        return f'等级 {self.id} | {self.disp_name} | {self.reach_count}'
+        return f'@{self.id} | {self.disp_name} | {self.reach_count}'

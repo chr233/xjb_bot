@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-28 12:17:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:24:43
+# @LastEditTime : 2021-10-31 14:51:53
 # @Description  : 
 '''
 
@@ -34,4 +34,4 @@ class Badges(Model):
         table = "badges"
     
     def __str__(self) -> str:
-        return f'徽章 {self.id} | {self.disp_name} | {self.reach_count}'
+        return f'@{self.id} | {self.disp_name} | {self.reach_count}'

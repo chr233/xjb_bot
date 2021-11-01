@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-28 18:26:12
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 13:16:00
+# @LastEditTime : 2021-11-01 13:59:19
 # @Description  : 
 '''
 
@@ -13,7 +13,10 @@ from tortoise import fields
 class Reasons(Model):
     '''未过审原因模板'''
     id = fields.IntField(pk=True)
-    template = fields.CharField(max_length=255)  # 拒绝原因模板
+    reason = fields.CharField(max_length=255)  # 拒绝原因模板
 
     class Mate:
         table = "reasons"
+        
+    def __str__(self):
+        return f'@{self.id} {self.template}'
