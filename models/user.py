@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-01 22:12:23
+# @LastEditTime : 2021-11-02 00:02:17
 # @Description  : 用户表
 '''
 
@@ -53,8 +53,8 @@ class Users(Model):
 
     posts: fields.ReverseRelation["Posts"]
     ratings:fields.ReverseRelation["Ratings"]
-    reviews_accept: fields.ReverseRelation["Public_Posts"]
-    reviews_reject: fields.ReverseRelation["Reject_Posts"]
+    reviews_accept: fields.ReverseRelation["PublicPosts"]
+    reviews_reject: fields.ReverseRelation["RejectPosts"]
 
     class Mate:
         table = "users"

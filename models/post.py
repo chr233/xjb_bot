@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-01 22:10:50
+# @LastEditTime : 2021-11-02 00:01:53
 # @Description  :
 '''
 
@@ -57,8 +57,8 @@ class Posts(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 
-    public_post: fields.ReverseRelation["Public_Posts"]
-    reject_post: fields.ReverseRelation["Reject_Posts"]
+    public_post: fields.ReverseRelation["PublicPosts"]
+    reject_post: fields.ReverseRelation["RejectPosts"]
     wanan_list: fields.ReverseRelation["Wanan_Posts"]
 
     class Mate:
@@ -68,7 +68,7 @@ class Posts(Model):
         return f'@{self.id} {self.status} {self.caption}'
 
 
-class Public_Posts(Model):
+class PublicPosts(Model):
     '''通过审核并发布的稿件模型'''
 
     id = fields.IntField(pk=True)
@@ -106,7 +106,7 @@ class Public_Posts(Model):
         return f'@{self.id} [{self.like} / {self.dislike} , {self.gress} , {self.mars}]'
 
 
-class Reject_Posts(Model):
+class RejectPosts(Model):
     '''被拒绝的稿件模型'''
 
     id = fields.IntField(pk=True)

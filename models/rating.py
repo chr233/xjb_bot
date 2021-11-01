@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-01 22:10:07
+# @LastEditTime : 2021-11-02 00:02:39
 # @Description  : 
 '''
 from enum import IntEnum
@@ -11,7 +11,7 @@ from tortoise.models import Model
 from tortoise import fields
 
 
-class Rate_Choose(IntEnum):
+class RatingValue(IntEnum):
     Default = 0
     LIKE = 1     # 喜欢
     CAO = 2      # 生草
@@ -26,8 +26,8 @@ class Ratings(Model):
     '''稿件评分模型'''
     id = fields.IntField(pk=True)
 
-    post_id: fields.ForeignKeyRelation["Public_Posts"] = fields.ForeignKeyField(
-        model_name='models.Public_Posts', related_name='ratings'
+    post_id: fields.ForeignKeyRelation["PublicPosts"] = fields.ForeignKeyField(
+        model_name='models.PublicPosts', related_name='ratings'
     )  # 评分对象
 
     user: fields.ForeignKeyRelation["Users"] = fields.ForeignKeyField(
@@ -35,7 +35,7 @@ class Ratings(Model):
     )  # 评分用户
 
     value = fields.IntEnumField(
-        enum_type=Rate_Choose, default=Rate_Choose.Default
+        enum_type=RatingValue, default=RatingValue.Default
     )  # 评分值
 
     modified_at = fields.DatetimeField(auto_now=True)

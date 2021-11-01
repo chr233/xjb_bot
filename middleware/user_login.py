@@ -2,15 +2,13 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 19:43:09
+# @LastEditTime : 2021-11-02 00:00:28
 # @Description  : 
 '''
 from aiogram.dispatcher.handler import CancelHandler
 from loguru import logger
 
 from aiogram import types
-from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 from models.user import Users
@@ -20,9 +18,9 @@ from models.level import Levels
 from utils.default_setting import get_default_setting
 
 
-class User_Login(BaseMiddleware):
+class UserLogin(BaseMiddleware):
     """
-    Simple middleware
+    登陆
     """
     ready = False
     default_level: Levels = None
@@ -42,7 +40,6 @@ class User_Login(BaseMiddleware):
 
         from_user = message.from_user
 
-
         uid = str(from_user.id)
         unick = from_user.full_name
         uname = from_user.mention
@@ -52,13 +49,13 @@ class User_Login(BaseMiddleware):
         if from_user.is_bot:
             logger.debug(f'阻止机器人用户 @{uname} {unick}')
             return CancelHandler()
-        
+
         if user.is_ban:
             logger.debug(f'阻止被Ban用户 {user}')
             raise CancelHandler()
 
         right = await user.right.get()
-        
+
         message.user = user
         message.right = right
 
