@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 00:01:12
+# @LastEditTime : 2021-11-02 14:23:52
 # @Description  : 
 '''
 
@@ -12,8 +12,8 @@ from config import CFG, Bot_Modes
 
 from db import init_orm, close_orm
 
-from user import setup as user_setup
-from admin import setup as admin_setup
+from command.user import setup as user_setup
+from command.admin import setup as admin_setup
 
 from middleware.user_login import UserLogin
 

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 12:52:51
+# @LastEditTime : 2021-11-02 14:13:52
 # @Description  : 
 '''
 
@@ -25,7 +25,7 @@ async def handle_help(message: Message):
     elif right.can_use_cmd:
         msg = CMD_HELP['NORMAL']
     else:
-        msg = CMD_HELP['NULL']
+        msg = CMD_HELP['NULL'] 
 
     await message.reply(msg, parse_mode=ParseMode.MARKDOWN)
 
