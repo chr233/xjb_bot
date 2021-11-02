@@ -1,0 +1,6 @@
+aiogram==2.15
+aiohttp==3.7.4.post0
+aiomysql==0.0.20
+aioredis==2.0.0
+aiosqlite==0.16.0
+APScheduler==3.7.0

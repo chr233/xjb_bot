@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 19:37:40
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 13:31:22
+# @LastEditTime : 2021-11-02 14:57:02
 # @Description  : 
 '''
 
@@ -19,12 +19,12 @@ async def setup(dp: Dispatcher, *args, **kwargs):
 
     @dp.message_handler(commands=['top'])
     @need_permission(permission=Permissions.AdminCmd)
-    async def top(message: types.Message):
+    async def _(message: types.Message):
         await handle_top(message)
 
     @dp.message_handler(commands=['reload'])
     @need_permission(permission=Permissions.SuperCmd)
-    async def reload(message: types.Message):
+    async def _(message: types.Message):
         await handle_reload(message)
 
     logger.info('Admin dispatcher loaded')
