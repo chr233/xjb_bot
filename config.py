@@ -3,7 +3,7 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-29 14:14:58
+# @LastEditTime : 2021-11-02 11:08:27
 # @Description  : 全局配置
 '''
 
@@ -12,6 +12,8 @@ from typing import List, Union
 from pydantic import BaseSettings as BS
 
 VERSION = '1.0.0'
+
+BOT_NICK = '心惊报投稿Bot'
 
 
 class Bot_Modes(Enum):

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:22:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 14:17:19
+# @LastEditTime : 2021-11-02 10:32:15
 # @Description  : 初始化数据库
 '''
 
@@ -20,7 +20,7 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
     '''
     # 读取默认权限和等级
 
-    default_level = await Levels.get_or_none(default=True)
+    default_level = await Levels.filter(default=True).limit(1)
 
     if not default_level:  # 不存在就创建
         default_level = await Levels.create(
@@ -30,9 +30,10 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
             max_exp=-1,
         )
         logger.info('Create default level')
-        
+    else:
+        default_level=default_level[0]
 
-    default_right = await Rights.get_or_none(default=True)
+    default_right = await Rights.filter(default=True).limit(1)
 
     if not default_right:  # 不存在就创建
         default_right = await Rights.create(
@@ -48,5 +49,7 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
             can_use_super_cmd=False
         )
         logger.info('Create default right')
-
+    else:
+        default_right=default_right[0]
+    
     return (default_level, default_right)

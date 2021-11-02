@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 16:14:10
+# @LastEditTime : 2021-11-02 13:33:40
 # @Description  : 
 '''
 
@@ -55,7 +55,7 @@ def need_permission(permission: Permissions):
 
         async def wrapper(message: types.Message):
 
-            if check_permission(message.right, permission):
+            if check_permission(message.user.right, permission):
                 await callback(message)
             else:
                 logger.debug(f'鉴权失败 {message.user}')

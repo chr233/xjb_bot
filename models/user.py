@@ -2,12 +2,14 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 00:02:17
+# @LastEditTime : 2021-11-02 10:00:47
 # @Description  : 用户表
 '''
 
 from tortoise.models import Model
 from tortoise import fields
+
+from utils import custom_fields
 
 # from .badge import Badges
 # from .level import Levels
@@ -36,10 +38,12 @@ class Users(Model):
         model_name="models.Rights", related_name="users",
         on_delete=fields.CASCADE
     )  # 用户权限
-    badge: fields.ManyToManyRelation["Badges"] = fields.ManyToManyField(
+    
+    badges: fields.ManyToManyRelation["Badges"] = fields.ManyToManyField(
         model_name="models.Badges", related_name="users",
         through="users_badges", on_delete=fields.CASCADE
-    )  # 用户权限
+    )  # 用户所有徽章
+    enable_badges = custom_fields.BadgesField(default="")  # 徽章列表
 
     accept_count = fields.IntField(default=0)  # 过审投稿数
     reject_count = fields.IntField(default=0)  # 被毙投稿数

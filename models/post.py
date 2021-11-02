@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 00:01:53
+# @LastEditTime : 2021-11-02 09:21:40
 # @Description  :
 '''
 
@@ -75,7 +75,7 @@ class PublicPosts(Model):
 
     message_id = fields.IntField(unique=True, index=True)  # 频道广播消息ID
 
-    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+    post: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
         model_name='models.Posts', related_name='public_post', to_field='id',
         on_delete=fields.CASCADE
     )  # 被审核的原消息ID
@@ -111,7 +111,7 @@ class RejectPosts(Model):
 
     id = fields.IntField(pk=True)
 
-    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+    post: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
         model_name='models.Posts', related_name='reject_post', to_field='id',
         on_delete=fields.CASCADE
     )  # 被审核的原消息ID
@@ -138,7 +138,7 @@ class Wanan_Posts(Model):
 
     id = fields.IntField(pk=True)
     
-    post_id: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
+    post: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
         model_name='models.Posts', related_name='wanan_list', to_field='id',
         on_delete=fields.CASCADE
     )

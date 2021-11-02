@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-01 09:46:32
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-01 23:21:39
+# @LastEditTime : 2021-11-02 10:25:42
 # @Description  : 
 '''
 
@@ -16,8 +16,7 @@ from models.base_model import FileObj, SourceLink
 
 class FileObjField(TextField):
     """
-    An example extension to CharField that serializes Enums
-    to and from a str representation in the DB.
+    使用TextField储存多个文件对象
     """
 
     def __init__(self, **kwargs):
@@ -30,7 +29,7 @@ class FileObjField(TextField):
             files = [x.dict() for x in value]
             return rapidjson.dumps(files)
 
-    def to_python_value(self, value: str) -> Union[None, List[FileObj]]:
+    def to_python_value(self, value: Union[List[FileObj], str]) -> Union[None, List[FileObj]]:
         try:
             if not value:
                 return []
@@ -51,8 +50,7 @@ class FileObjField(TextField):
 
 class LinkObjField(TextField):
     """
-    An example extension to CharField that serializes Enums
-    to and from a str representation in the DB.
+    使用TextField储存单个链接对象
     """
 
     def __init__(self, **kwargs):
@@ -79,4 +77,40 @@ class LinkObjField(TextField):
         except Exception:
             raise ValueError(
                 f"Database value {value} can't unserialise to SourceLink."
+            )
+
+
+class BadgesField(TextField):
+    """
+    使用TextField储存徽章ID
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def to_db_value(self, value: Union[None, List[int]], instance) -> str:
+        if not value:
+            return ''
+        else:
+            if isinstance(value, list) and isinstance(value[0], int):
+                data = rapidjson.dumps(value)
+            else:
+                value = [x.id for x in value]
+                data = rapidjson.dumps(value)
+
+            return rapidjson.dumps(value)
+
+    def to_python_value(self, value: Union[str, List[int]]) -> Union[None, List[int]]:
+        try:
+            if not value:
+                return None
+            else:
+                if isinstance(value, list):
+                    data = value
+                else:
+                    data = rapidjson.loads(value)
+                return data
+        except Exception:
+            raise ValueError(
+                f"Database value {value} can't unserialise to badges_list."
             )

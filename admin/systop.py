@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 19:37:48
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 15:42:24
+# @LastEditTime : 2021-11-02 13:27:05
 # @Description  : 服务器监控
 '''
 
@@ -21,7 +21,7 @@ from psutil import virtual_memory, disk_usage, disk_partitions
 FONT_PATH = path.join('res', 'sarasa-mono-sc-semibold.ttf')
 
 
-async def cmd_systop(message: Message):
+async def handle_top(message: Message):
     f = draw_usage_data(get_system_data(), get_usage_data())
 
     await message.reply_photo(photo=f, caption='系统状态')
