@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 13:52:40
+# @LastEditTime : 2021-11-03 15:26:45
 # @Description  : 
 '''
 
@@ -22,6 +22,7 @@ from command.admin import setup as admin_setup
 from chat.post import setup as post_setup
 
 from middleware.user_login import UserLogin
+from middleware.largest_photo import LargestPhoto
 
 
 def main():
@@ -39,10 +40,11 @@ def main():
     else:
         storge = MongoStorage(uri=CFG.Mongo_URL)
         logger.info('Using Mongo for storage.')
-        
+
     dispatcher = Dispatcher(bot, storage=storge)
 
     dispatcher.middleware.setup(UserLogin())
+    dispatcher.middleware.setup(LargestPhoto())
 
     startups = [
         init_orm,
