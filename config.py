@@ -3,7 +3,7 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 11:08:27
+# @LastEditTime : 2021-11-03 13:51:33
 # @Description  : 全局配置
 '''
 
@@ -28,6 +28,10 @@ class Config(BS):
 
     DB_URL: str = 'sqlite://data.db'
 
+    Mongo: bool = False
+
+    Mongo_URL: str = None
+
     Generate_Schemas: bool = True
 
     PROXY: Union[str, None] = None
@@ -47,6 +51,10 @@ class Config(BS):
     Wanan_Start: int = 0
     Wanan_End: int = 0
     Wanan_period: int = 0
+
+    def __init__(self, *args, **kwargs):
+        print('Config init')
+        super().__init__(*args, **kwargs)
 
     class Config:
         env_file = '.env'

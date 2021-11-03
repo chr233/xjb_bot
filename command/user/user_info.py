@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 15:00:11
+# @LastEditTime : 2021-11-02 21:56:29
 # @Description  : 
 '''
 
@@ -43,6 +43,7 @@ async def handle_info(message: Message):
         f'评价总数: `{rating}`',
         "="*15,
         f"经验: `{exp}`",
+        '投稿、审核、评分都可以获得经验哦'
     ])
 
     await message.reply(info, parse_mode=ParseMode.MARKDOWN)

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 09:21:40
+# @LastEditTime : 2021-11-03 00:36:01
 # @Description  :
 '''
 
@@ -11,7 +11,7 @@ from tortoise import fields
 from enum import IntEnum
 
 
-from utils import custom_fields
+from custom import custom_fields
 
 
 class Post_Status(IntEnum):

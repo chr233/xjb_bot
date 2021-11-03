@@ -7,7 +7,7 @@
 '''
 
 from enum import IntEnum
-
+from functools import wraps
 from aiogram import types
 from loguru import logger
 
@@ -52,7 +52,7 @@ def check_permission(right: Rights, permission: Permissions):
 def need_permission(permission: Permissions):
 
     def decorator(callback):
-
+        @wraps(callback)
         async def wrapper(message: types.Message):
 
             if check_permission(message.user.right, permission):
