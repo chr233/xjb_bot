@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:59:27
+# @LastEditTime : 2021-11-03 17:48:24
 # @Description  : 用户评分
 '''
 from enum import IntEnum
@@ -30,7 +30,7 @@ class Ratings(Model):
     '''稿件评分模型'''
     id = fields.IntField(pk=True)
 
-    post_id: fields.ForeignKeyRelation["PublicPosts"] = fields.ForeignKeyField(
+    post: fields.ForeignKeyRelation["PublicPosts"] = fields.ForeignKeyField(
         model_name='models.PublicPosts', related_name='ratings'
     )  # 评分对象
 
@@ -46,7 +46,7 @@ class Ratings(Model):
 
     class Mate:
         table = "ratings"
-        indexes = (
+        indexes  = (
             ("post", "user"),
         )
         unique_together = (

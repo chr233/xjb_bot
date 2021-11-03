@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:58:47
+# @LastEditTime : 2021-11-03 19:05:44
 # @Description  : 用户投稿
 '''
 
@@ -18,10 +18,9 @@ class Post_Status(IntEnum):
     '''
     稿件状态
     '''
-    Unknown = 0    # 默认状态
-    Padding = 0    # 已投稿,未确认
-    Reviewing = 1  # 已投稿,待审核
-    Revoke = 2     # 被撤回
+    Default = 0    # 默认状态
+    Padding = 1    # 未投稿,等待确认
+    Reviewing = 2  # 已投稿,待审核
     Rejected = 3   # 投稿未过审
     Accepted = 4   # 已过审并发布
     Wating = 5     # 已过审但是等待发布(色图排期)
@@ -48,7 +47,7 @@ class Posts(Model):
     )  # 投稿人
 
     status = fields.IntEnumField(
-        enum_type=Post_Status, default=Post_Status.Unknown
+        enum_type=Post_Status, default=Post_Status.Default
     )  # 稿件状态
 
     caption = fields.CharField(max_length=255, default='')  # 文字说明
@@ -141,7 +140,7 @@ class Wanan_Posts(Model):
     '''晚安稿件发送队列,发送后记得在该表中删除'''
 
     id = fields.IntField(pk=True)
-    
+
     post: fields.OneToOneRelation["Posts"] = fields.OneToOneField(
         model_name='models.Posts', related_name='wanan_list', to_field='id',
         on_delete=fields.CASCADE

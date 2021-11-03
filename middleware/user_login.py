@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:54:50
+# @LastEditTime : 2021-11-04 00:01:09
 # @Description  : 用户登录中间件
 '''
 
@@ -22,7 +22,7 @@ from utils.default_setting import get_default_setting
 
 class UserLogin(BaseMiddleware):
     """
-    登陆
+    登录
     """
     ready = False
     __default_level: Levels = None

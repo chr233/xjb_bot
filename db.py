@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 15:02:59
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-29 15:23:28
-# @Description  : 初始化数据库
+# @LastEditTime : 2021-11-03 19:22:56
+# @Description  : 数据库相关
 '''
 
 from loguru import logger
@@ -13,6 +13,9 @@ from config import CFG
 
 
 async def init_orm(*args, **kwargs):
+    '''
+    初始化数据库
+    '''
     await Tortoise.init(
         db_url=CFG.DB_URL,
         modules={
@@ -35,5 +38,8 @@ async def init_orm(*args, **kwargs):
 
 
 async def close_orm(*args, **kwargs) -> None:
+    '''
+    关闭数据库
+    '''
     await Tortoise.close_connections()
     logger.info("Tortoise-ORM shutdown")

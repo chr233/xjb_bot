@@ -2,10 +2,11 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 16:00:46
+# @LastEditTime : 2021-11-03 21:33:02
 # @Description  : 启动入口
 '''
 
+from aiogram_dialog.manager.registry import DialogRegistry
 from loguru import logger
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -16,10 +17,12 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from config import CFG, Bot_Modes
 
 from db import init_orm, close_orm
+from storage import close_storage
 
 from command.user import setup as user_setup
 from command.admin import setup as admin_setup
 from chat.post import setup as post_setup
+
 
 from middleware.user_login import UserLogin
 from middleware.largest_photo import LargestPhoto
@@ -52,7 +55,10 @@ def main():
         admin_setup,
         post_setup,
     ]
-    shutdowns = [close_orm]
+    shutdowns = [
+        close_orm,
+        close_storage,
+    ]
 
     if CFG.Bot_Mode == Bot_Modes.P:
         executor.start_polling(
