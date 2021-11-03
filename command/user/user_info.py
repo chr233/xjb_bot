@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 21:56:29
+# @LastEditTime : 2021-11-03 14:00:22
 # @Description  : 
 '''
 
@@ -15,7 +15,7 @@ from models.level import Levels
 from models.user import Users
 
 
-async def handle_info(message: Message):
+async def handle_myinfo(message: Message):
     user: Users = message.user
     nick = user.user_nick
     level = user.level.disp_name
@@ -29,6 +29,7 @@ async def handle_info(message: Message):
     reject = user.reject_count
     post = user.post_count
     rating = user.rating_count
+    review = user.review_count
     exp = user.exp_count
 
     info = '\n'.join([
@@ -40,6 +41,7 @@ async def handle_info(message: Message):
         f'采用稿件: `{accept}`',
         f'被拒稿件: `{reject}`',
         f'投稿总数: `{post}`',
+        f'审核总数: `{review}`',
         f'评价总数: `{rating}`',
         "="*15,
         f"经验: `{exp}`",

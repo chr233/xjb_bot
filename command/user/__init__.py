@@ -10,7 +10,7 @@ from loguru import logger
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import Message
 
-from .user_info import handle_info
+from .user_info import handle_myinfo
 from .help import handle_start, handle_help, handle_version
 
 
@@ -30,6 +30,6 @@ async def setup(dp: Dispatcher, *args, **kwargs):
 
     @dp.message_handler(commands=['myinfo'])
     async def _(message: Message):
-        await handle_info(message)
+        await handle_myinfo(message)
 
     logger.info('User dispatcher loaded')
