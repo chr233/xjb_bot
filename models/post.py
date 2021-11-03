@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 00:36:01
-# @Description  :
+# @LastEditTime : 2021-11-03 15:58:47
+# @Description  : 用户投稿
 '''
 
 from tortoise.models import Model
@@ -15,7 +15,11 @@ from custom import custom_fields
 
 
 class Post_Status(IntEnum):
+    '''
+    稿件状态
+    '''
     Unknown = 0    # 默认状态
+    Padding = 0    # 已投稿,未确认
     Reviewing = 1  # 已投稿,待审核
     Revoke = 2     # 被撤回
     Rejected = 3   # 投稿未过审

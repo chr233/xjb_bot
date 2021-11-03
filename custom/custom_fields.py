@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-11-01 09:46:32
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 10:25:42
-# @Description  : 
+# @LastEditTime : 2021-11-03 15:57:10
+# @Description  : 自定义orm字段
 '''
 
 import rapidjson

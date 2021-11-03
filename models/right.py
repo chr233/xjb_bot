@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 22:29:09
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-10-31 19:00:20
-# @Description  : 
+# @LastEditTime : 2021-11-03 16:00:05
+# @Description  : 用户权限组
 '''
 
 from tortoise.models import Model
@@ -12,7 +12,9 @@ from tortoise import fields
 # from .user import Users
 
 class Rights(Model):
-    '''用户权限等级模型'''
+    '''
+    用户权限等级模型
+    '''
     id = fields.IntField(pk=True)
     default = fields.BooleanField(default=False) # 是否为默认
     

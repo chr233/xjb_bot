@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 15:13:24
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:50:01
+# @LastEditTime : 2021-11-03 15:57:35
 # @Description  : 相同
 '''
 
@@ -11,10 +11,6 @@ from typing import Dict
 from loguru import logger
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram.dispatcher.handler import CancelHandler
-
-from utils.default_setting import get_default_setting
-
 
 class LargestPhoto(BaseMiddleware):
     """

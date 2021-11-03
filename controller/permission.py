@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 13:33:40
-# @Description  : 
+# @LastEditTime : 2021-11-03 15:55:20
+# @Description  : 权限控制
 '''
 
 from enum import IntEnum
@@ -15,6 +15,9 @@ from models.right import Rights
 
 
 class Permissions(IntEnum):
+    '''
+    权限类型
+    '''
     Null = 0
     Post = 1
     Rating = 2
@@ -27,6 +30,9 @@ class Permissions(IntEnum):
 
 
 def check_permission(right: Rights, permission: Permissions):
+    '''
+    检查是否有对应的权限
+    '''
     if permission == Permissions.Null:
         return True
     elif permission == Permissions.Post:
@@ -50,6 +56,9 @@ def check_permission(right: Rights, permission: Permissions):
 
 
 def need_permission(permission: Permissions):
+    '''
+    权限检查装饰器
+    '''
 
     def decorator(callback):
         @wraps(callback)

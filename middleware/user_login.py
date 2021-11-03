@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 13:45:35
-# @Description  : 
+# @LastEditTime : 2021-11-03 15:54:50
+# @Description  : 用户登录中间件
 '''
 
 from typing import Dict
@@ -11,7 +11,6 @@ from loguru import logger
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.dispatcher.handler import CancelHandler
-from models.badge import Badges
 
 from models.user import Users
 from models.right import Rights

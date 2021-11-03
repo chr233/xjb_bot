@@ -2,15 +2,12 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 14:00:22
-# @Description  : 
+# @LastEditTime : 2021-11-03 15:56:39
+# @Description  : 用户信息
 '''
 
 from aiogram.types import Message
 from aiogram.types.message import ParseMode
-import aiogram.utils.markdown as md
-from models.badge import Badges
-from models.level import Levels
 
 from models.user import Users
 

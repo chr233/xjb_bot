@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 00:35:40
-# @Description  : 用户表
+# @LastEditTime : 2021-11-03 16:00:28
+# @Description  : 用户信息
 '''
 
 from tortoise.models import Model
@@ -17,7 +17,9 @@ from custom import custom_fields
 
 
 class Users(Model):
-    '''用户信息模型'''
+    '''
+    用户信息表
+    '''
 
     id = fields.IntField(pk=True)
 

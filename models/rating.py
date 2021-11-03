@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 00:02:39
-# @Description  : 
+# @LastEditTime : 2021-11-03 15:59:27
+# @Description  : 用户评分
 '''
 from enum import IntEnum
 
@@ -12,6 +12,10 @@ from tortoise import fields
 
 
 class RatingValue(IntEnum):
+    '''
+    评分类型
+    '''
+    
     Default = 0
     LIKE = 1     # 喜欢
     CAO = 2      # 生草
