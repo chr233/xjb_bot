@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 16:00:28
+# @LastEditTime : 2021-11-09 14:41:08
 # @Description  : 用户信息
 '''
 
@@ -23,8 +23,7 @@ class Users(Model):
 
     id = fields.IntField(pk=True)
 
-    user_id = fields.CharField(
-        max_length=20, index=True, unique=True)  # 用户数字id
+    user_id = fields.BigIntField(index=True, unique=True)  # 用户数字id
     user_nick = fields.CharField(max_length=255)  # 用户昵称
     user_name = fields.CharField(max_length=255)  # 用户@id
 
@@ -45,7 +44,7 @@ class Users(Model):
         model_name="models.Badges", related_name="users",
         through="users_badges", on_delete=fields.CASCADE
     )  # 用户所有徽章
-    
+
     enable_badges = custom_fields.BadgesField(default="")  # 徽章列表
 
     accept_count = fields.IntField(default=0)  # 过审投稿数

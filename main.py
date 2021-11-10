@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 21:33:02
+# @LastEditTime : 2021-11-09 14:17:40
 # @Description  : 启动入口
 '''
 
@@ -12,6 +12,8 @@ from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
+
+from middleware.log import LoggingMiddleware
 
 
 from config import CFG, Bot_Modes
@@ -48,6 +50,7 @@ def main():
 
     dispatcher.middleware.setup(UserLogin())
     dispatcher.middleware.setup(LargestPhoto())
+    dispatcher.middleware.setup(LoggingMiddleware())
 
     startups = [
         init_orm,

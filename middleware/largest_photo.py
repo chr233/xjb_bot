@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 15:13:24
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 19:02:12
+# @LastEditTime : 2021-11-08 19:10:51
 # @Description  : 自动选择最大的图片
 '''
 
@@ -18,7 +18,7 @@ class LargestPhoto(BaseMiddleware):
     """
 
     def __init__(self):
-        logger.info('User login middleware loaded')
+        logger.info('Largest photo middleware loaded')
         super().__init__()
 
     async def on_process_message(self, message: Message, data: dict):
