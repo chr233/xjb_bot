@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-04 00:01:09
+# @LastEditTime : 2021-11-22 23:19:41
 # @Description  : 用户登录中间件
 '''
 
@@ -36,6 +36,9 @@ class UserLogin(BaseMiddleware):
         super().__init__()
 
     async def prepare_models(self):
+        '''
+        初始化模型
+        '''
         self.__default_level, self.__default_right = await get_default_setting()
         levels = await Levels.all()
         rights = await Rights.all()
@@ -71,11 +74,42 @@ class UserLogin(BaseMiddleware):
 
         if user.is_ban:
             logger.debug(f'阻止被Ban用户 {user}')
+            await message.reply('您已被限制访问')
             raise CancelHandler()
 
         message.user = user
 
+    async def on_process_callback_query(self,  callback_query: types.CallbackQuery, data: dict):
+        """
+        让Callback_query对象带上当前用户
+        """
+
+        if not self.ready:
+            await self.prepare_models()
+
+        from_user = callback_query.from_user
+
+        uid = str(from_user.id)
+        unick = from_user.full_name
+        uname = from_user.mention
+
+        user = await self.get_user(uid, unick, uname)
+
+        if from_user.is_bot:
+            logger.debug(f'阻止机器人用户 @{uname} {unick}')
+            return CancelHandler()
+
+        if user.is_ban:
+            logger.debug(f'阻止被Ban用户 {user}')
+            await callback_query.answer('无权访问', show_alert=True)
+            raise CancelHandler()
+
+        callback_query.user = user
+
     async def get_user(self, user_id: str, user_nick: str, user_name: str):
+        '''
+        读取用户信息
+        '''
         user = await Users.get_or_none(user_id=user_id)
 
         if not user:
@@ -92,7 +126,7 @@ class UserLogin(BaseMiddleware):
 
             logger.debug(f'创建新用户 {user}')
 
-        if (user.user_nick != user_nick) or (user.user_id != user_id):
+        if (user.user_nick != user_nick):
             user.user_nick = user_nick
             user.user_id = user_id
             await user.save()

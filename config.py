@@ -3,7 +3,7 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 18:52:20
+# @LastEditTime : 2021-11-22 21:25:28
 # @Description  : 全局配置
 '''
 
@@ -42,7 +42,7 @@ class Config(BS):
 
     Super_Admin: List[int] = []
 
-    Review_Channel: str = ''
+    Review_Group: str = ''
 
     Accept_Channel: str = ''
 

@@ -2,44 +2,36 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 19:46:39
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-10 14:55:09
-# @Description  : 
+# @LastEditTime : 2021-11-23 00:27:29
+# @Description  : 投稿按钮
 '''
 
+from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon, InlineKeyboardMarkup
 
-import asyncio
-import logging
-from datetime import datetime
-from operator import itemgetter
-
-from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery
-
-from aiogram.types.reply_keyboard import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon
-
-from utils.strings import bool2str
-from utils.emojis import GHOST, SMILE, NO, YES
+from utils.emojis import GHOST, SMILE, NO, YES, WATER
 
 
-__submit_post_kbd = [
-    [IKButon(f'{SMILE}保留来源', callback_data='anymouse_mode')],
-    [IKButon(f'{NO}取消', callback_data='cancal_post'),
-     IKButon(f'{YES}投稿', callback_data='submit_post')]
+class SubmitPostKey():
+    anymouse_on = 'sp_anymouse_on'      # 匿名模式
+    anymouse_off = 'sp_anymouse_off'    # 实名模式
+    cancel = 'sp_cancel'                # 取消投稿
+    post = 'sp_post'                    # 投稿
+    post_anymouse = 'sp_post_anymouse'  # 匿名投稿
+
+
+__submit_post_kbd_named = [
+    [IKButon(f'{SMILE}保留来源', callback_data=SubmitPostKey.anymouse_on)],
+    [IKButon(f'{NO}取消', callback_data=SubmitPostKey.cancel),
+     IKButon(f'{YES}投稿', callback_data=SubmitPostKey.post)]
 ]
 
-__submit_post_kbd = [
-    [IKButon(f'{GHOST}匿名投稿', callback_data='anymouse_mode_anymouse')],
-    [IKButon(f'{NO}取消', callback_data='cancal_post_anymouse'),
-     IKButon(f'{YES}投稿', callback_data='submit_post_anymouse')]
+__submit_post_kbd_anymouse = [
+    [IKButon(f'{GHOST}匿名投稿', callback_data=SubmitPostKey.anymouse_off)],
+    [IKButon(f'{NO}取消', callback_data=SubmitPostKey.cancel),
+     IKButon(f'{YES}投稿', callback_data=SubmitPostKey.post_anymouse)]
 ]
 
 
-def gen_submit_keyboard(anymouse: bool = False):
-    keyboard = __submit_post_kbd
-
-    keyboard[0][0].text = f'{GHOST}匿名投稿' if anymouse else f'{SMILE}保留来源'
-
-    return keyboard
+def gen_submit_keyboard(anymouse: bool = False) -> InlineKeyboardMarkup:
+    kbd = __submit_post_kbd_anymouse if anymouse else __submit_post_kbd_named
+    return InlineKeyboardMarkup(inline_keyboard=kbd)

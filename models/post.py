@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-10 14:14:54
+# @LastEditTime : 2021-11-23 00:20:49
 # @Description  : 用户投稿
 '''
 
@@ -20,13 +20,29 @@ class Post_Status(IntEnum):
     '''
     Default = 0    # 默认状态
     Padding = 1    # 未投稿,等待确认
-    Reviewing = 2  # 已投稿,待审核
-    Rejected = 3   # 投稿未过审
-    Accepted = 4   # 已过审并发布
-    Wating = 5     # 已过审但是等待发布(色图排期)
+    Cancel = 2     # 已取消
+    Reviewing = 3  # 已投稿,待审核
+    Rejected = 4   # 投稿未过审
+    Accepted = 5   # 已过审并发布
+    Wating = 6     # 已过审但是等待发布(色图排期)
 
     def __str__(self) -> str:
-        return self.name
+        if self.value == 0:
+            return '未知'
+        elif self.value == 1:
+            return '等待确认'
+        elif self.value == 2:
+            return '已取消'
+        elif self.value == 3:
+            return '等待审核'
+        elif self.value == 4:
+            return '未通过'
+        elif self.value == 5:
+            return '已采用'
+        elif self.value == 6:
+            return '已采用,色图排期'
+        else:
+            return self.name
 
 
 class Posts(Model):
@@ -51,6 +67,7 @@ class Posts(Model):
     )  # 稿件状态
 
     caption = fields.CharField(max_length=255, default='')  # 文字说明
+    raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
 
     tags = fields.CharField(max_length=255, default='')  # 标签列表
 

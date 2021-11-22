@@ -2,16 +2,16 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-09 14:17:40
+# @LastEditTime : 2021-11-22 23:29:16
 # @Description  : 启动入口
 '''
 
-from aiogram_dialog.manager.registry import DialogRegistry
 from loguru import logger
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from custom.error_handler import error_handler
 
 from middleware.log import LoggingMiddleware
 
@@ -49,8 +49,9 @@ def main():
     dispatcher = Dispatcher(bot, storage=storge)
 
     dispatcher.middleware.setup(UserLogin())
-    dispatcher.middleware.setup(LargestPhoto())
-    dispatcher.middleware.setup(LoggingMiddleware())
+    # dispatcher.middleware.setup(LargestPhoto())
+    # dispatcher.middleware.setup(LoggingMiddleware())
+    dispatcher.register_errors_handler(error_handler)
 
     startups = [
         init_orm,
