@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:23:19
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-22 22:40:53
+# @LastEditTime : 2021-11-23 23:01:50
 # @Description  : 接受投稿
 '''
 
@@ -12,6 +12,7 @@ from aiogram.types.message import ContentType, Message
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import filters, Dispatcher
 from aiogram.dispatcher.filters import ChatTypeFilter, MediaGroupFilter
+from chat.post.review_post import handle_review_post_callback
 
 from controller.permission import need_permission, Permissions
 
@@ -23,6 +24,12 @@ async def setup(dp: Dispatcher, *args, **kwargs):
     @need_permission(permission=Permissions.Post)
     async def _(callback_query: CallbackQuery):
         await handle_submit_post_callback(callback_query)
+        
+        
+    @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('rp_'))
+    @need_permission(permission=Permissions.Post)
+    async def _(callback_query: CallbackQuery):
+        await handle_review_post_callback(callback_query)
 
     @dp.message_handler(ChatTypeFilter('private'), content_types=ContentType.TEXT)
     async def _(message: Message):

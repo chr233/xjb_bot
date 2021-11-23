@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:11
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-23 00:26:30
+# @LastEditTime : 2021-11-24 00:12:04
 # @Description  : 处理投稿
 '''
 
@@ -11,6 +11,7 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.message import Message
 from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMarkup
+from buttons.review import RKH, ReviewKeyboardsHelper
 from models.base_model import FileObj, SourceLink
 from aiogram.utils.exceptions import InvalidQueryID
 
@@ -28,11 +29,16 @@ async def submit_new_post(message: Message):
 
 
 async def handle_submit_post_callback(query: CallbackQuery):
+    '''
+    处理投稿按钮回调
+    '''
     data = query.data
     bot = query.bot
 
     chat_id = query.message.chat.id
     msg_id = query.message.message_id
+
+    user = query.user
 
     if 'anymouse_' in data:
         anymouse = data == SubmitPostKey.anymouse_on
@@ -52,6 +58,10 @@ async def handle_submit_post_callback(query: CallbackQuery):
                 text='投稿不存在',
             )
             return
+
+        # if post.poster.user_id != user.user_id:
+        #     await query.answer('仅限本人操作')
+        #     return
 
         if data == SubmitPostKey.cancel:
             await query.answer('投稿已取消')
@@ -77,11 +87,15 @@ async def handle_submit_post_callback(query: CallbackQuery):
                     from_chat_id=chat_id,
                     message_id=post.origin_mid
                 )
+
+                keyboard = await RKH.get_tag_keyboard_short(0)
+
                 manage_mid = await bot.send_message(
                     chat_id=CFG.Review_Group,
                     text=(
-                        f''
-                    )
+                        f'投稿人: {post.poster.md_link}'
+                    ),
+                    reply_markup=keyboard
                 )
 
                 post.update_from_dict({
@@ -99,8 +113,8 @@ async def handle_submit_post_callback(query: CallbackQuery):
                     chat_id=chat_id,
                     message_id=msg_id,
                     text=(
-                        f'稿件状态: `{Post_Status.Reviewing}`\n'
-                        f'采用数/总投稿: `{user.accept_count}/{user.post_count}`'
+                        f'稿件状态: {str(Post_Status.Reviewing)}\n'
+                        f'采用数/总投稿: {user.accept_count}/{user.post_count}'
                     )
                 )
 
@@ -117,11 +131,6 @@ async def handle_submit_post_callback(query: CallbackQuery):
             return
 
         await post.save()
-
-    data = query.data
-    msg_id = query.message.message_id
-
-    print(data, msg_id)
 
 
 async def create_new_post(msg: Message, msg2: Message):

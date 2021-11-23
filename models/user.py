@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-09 14:41:08
+# @LastEditTime : 2021-11-24 00:08:18
 # @Description  : 用户信息
 '''
 
@@ -68,3 +68,6 @@ class Users(Model):
 
     def __str__(self) -> str:
         return f'@{self.id} | #{self.user_id} | {self.user_nick}'
+
+    def md_link(self)->str:
+        return f'[{self.user_nick}](https://t.me/{self.user_name})'

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-23 00:20:49
+# @LastEditTime : 2021-11-24 00:41:01
 # @Description  : 用户投稿
 '''
 
@@ -10,8 +10,16 @@ from tortoise.models import Model
 from tortoise import fields
 from enum import IntEnum
 
-
 from custom import custom_fields
+
+class Post_Types(IntEnum):
+    '''
+    稿件类型
+    '''
+    Default = 0     # 默认类型
+    Text = 1        # 文字
+    Media = 2       # 单图
+    MediaGroup = 3  # 多图
 
 
 class Post_Status(IntEnum):
@@ -25,6 +33,9 @@ class Post_Status(IntEnum):
     Rejected = 4   # 投稿未过审
     Accepted = 5   # 已过审并发布
     Wating = 6     # 已过审但是等待发布(色图排期)
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     def __str__(self) -> str:
         if self.value == 0:
@@ -65,14 +76,17 @@ class Posts(Model):
     status = fields.IntEnumField(
         enum_type=Post_Status, default=Post_Status.Default
     )  # 稿件状态
+    
+    post_type = fields.IntEnumField(
+        enum_type=Post_Types, default=Post_Types.Default
+    )  # 稿件类型
 
     caption = fields.CharField(max_length=255, default='')  # 文字说明
     raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
 
-    tags = fields.CharField(max_length=255, default='')  # 标签列表
+    tags = fields.CharField(max_length=255, default='')  # 标签列表, 纯文本储存, 逗号分隔
 
     source = custom_fields.LinkObjField(default='')  # 消息来源,为空代表消息来自投稿者
-    files = custom_fields.FileObjField(default='')  # 文件列表
 
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
