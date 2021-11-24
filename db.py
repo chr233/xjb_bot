@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 15:02:59
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-23 10:55:27
+# @LastEditTime : 2021-11-25 00:19:44
 # @Description  : 数据库相关
 '''
 
@@ -10,6 +10,7 @@ from loguru import logger
 from tortoise import Tortoise
 
 from config import CFG
+
 
 async def init_orm(*args, **kwargs):
     '''
@@ -25,7 +26,7 @@ async def init_orm(*args, **kwargs):
                 'models.rating',
                 'models.reason',
                 'models.right',
-                'models.tag',
+                # 'models.tag',
                 'models.user',
             ]
         }

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 12:09:25
+# @LastEditTime : 2021-11-24 18:47:03
 # @Description  : 用户投稿
 '''
 
@@ -35,26 +35,25 @@ class Post_Status(IntEnum):
     Accepted = 5   # 已过审并发布
     Wating = 6     # 已过审但是等待发布(色图排期)
 
-    def __repr__(self) -> str:
-        return self.__str__()
 
-    def __str__(self) -> str:
-        if self.value == 0:
+    @staticmethod
+    def describe(value) -> str:
+        if value == 0:
             return '未知'
-        elif self.value == 1:
+        elif value == 1:
             return '等待确认'
-        elif self.value == 2:
+        elif value == 2:
             return '已取消'
-        elif self.value == 3:
+        elif value == 3:
             return '等待审核'
-        elif self.value == 4:
+        elif value == 4:
             return '未通过'
-        elif self.value == 5:
+        elif value == 5:
             return '已采用'
-        elif self.value == 6:
+        elif value == 6:
             return '已采用,色图排期'
         else:
-            return self.name
+            return '未知'
 
 
 class Posts(Model):
@@ -85,7 +84,8 @@ class Posts(Model):
     caption = fields.CharField(max_length=255, default='')  # 文字说明
     raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
 
-    tags = fields.CharField(max_length=255, default='')  # 标签列表, 纯文本储存, 逗号分隔
+    tags = fields.CharField(max_length=255, default='')  # 未发布前储存投稿人链接
+                                                         # 标签列表, 纯文本储存, 逗号分隔
 
     files = custom_fields.FileObjField(default='')  # 文件列表
 

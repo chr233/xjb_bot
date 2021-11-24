@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 15:05:46
+# @LastEditTime : 2021-11-24 16:17:03
 # @Description  : 用户信息
 '''
 
@@ -34,14 +34,14 @@ async def handle_myinfo(message: Message):
         f"等级: `{level}`\n"
         f"权限: `{right}`\n"
         f"徽章: `{badges}`\n"
-        "==============="
+        "===============\n"
         f'采用稿件: `{accept}`\n'
         f'被拒稿件: `{reject}`\n'
         f'投稿总数: `{post}`\n'
         f'审核总数: `{review}`\n'
         f'评价总数: `{rating}`\n'
-        "==============="
-        f"经验: `{exp}`"
+        "===============\n"
+        f"经验: `{exp}`\n"
         '投稿、审核、评分都可以获得经验哦'
     )
 

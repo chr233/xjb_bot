@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:18
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:38:49
+# @LastEditTime : 2021-11-24 18:32:16
 # @Description  : 审核投稿
 '''
 
@@ -36,46 +36,32 @@ async def handle_review_post_callback(query: CallbackQuery):
 
     try:
         cmd, selected = data.split(' ')
-        tags = int(selected)
+        selected = int(selected)
     except ValueError:
         cmd = data.strip()
-        tags = 0
+        selected = 0
         # return
 
-    post = await Posts.get_or_none(manage_mid=msg_id)
+    print(f'cmd: {cmd}, selected: {selected}')
 
-    if not post:
-        await query.answer('投稿不存在')
-        await bot.edit_message_text(
+    if cmd == ReviewPostKey.tag:
+
+        keyboard = await RKH.get_tag_keyboard_short(selected)
+
+        await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg_id,
-            text='投稿不存在',
+            reply_markup=keyboard
         )
+
+        # await bot.forward_message()
+
+    else:
         return
 
-    if cmd == ReviewPostKey.accept:
+        post = await Posts.get_or_none(manage_mid=msg_id)
+
         tags = RKH.get_tag(tags)
-
-        await query.answer('已发布')
-        
-        # await bot.edit_message_ca(
-        # )
-        
-        await bot.forward_message()
-        
-        await bot.edit_message_text(
-            chat_id=chat_id,
-            message_id=msg_id,
-            text=(
-                f'投稿人: {post.poster.md_link}\n'
-                f'匿名: {YES if post.anymouse else NO}\n'
-                f'审核人: {user.md_link}'
-                f'状态: {Post_Status.Accepted}'
-            )
-        )
-
-    elif cmd == ReviewPostKey.reject:
-        post = await Posts.get_or_none(action_mid=msg_id)
 
         if not post:
             await query.answer('投稿不存在')
@@ -86,12 +72,19 @@ async def handle_review_post_callback(query: CallbackQuery):
             )
             return
 
-        if data == SubmitPostKey.cancel:
-            await query.answer('投稿已取消')
+        if cmd == ReviewPostKey.reject:
+            ...
+        if data == ReviewPostKey.reject:
             await bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=msg_id,
-                text='投稿已取消',
+                text=(
+                    f'投稿人: {post.tags}\n'
+                    f'匿名: {"是" if post.anymouse else "否"}\n'
+                    f'审核人: {user.md_link}\n'
+                    f'状态: {Post_Status.Accepted}\n'
+                    '更多帮助: /help'
+                )
             )
             post.update_from_dict({
                 'caption': '',
@@ -157,5 +150,3 @@ async def handle_review_post_callback(query: CallbackQuery):
 
     data = query.data
     msg_id = query.message.message_id
-
-    print(data, msg_id)

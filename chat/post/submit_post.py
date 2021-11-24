@@ -2,13 +2,15 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:11
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 15:32:34
+# @LastEditTime : 2021-11-25 00:54:58
 # @Description  : 处理投稿
 '''
 
 from typing import List
 from aiogram.dispatcher.handler import CancelHandler
+from aiogram.types.base import InputFile
 from aiogram.types.callback_query import CallbackQuery
+from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import Message, ParseMode
 from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMarkup
 from buttons.review import RKH, ReviewKeyboardsHelper
@@ -19,7 +21,7 @@ from models.post import Posts, Post_Status
 
 from buttons.submit import SubmitPostKey, gen_submit_keyboard
 from models.user import Users
-from utils.emojis import GHOST, NO, SMILE
+from utils.emojis import GHOST, NO, SMILE, YES
 from utils.largest_media import find_largest_media
 from utils.regex_helper import pure_caption
 
@@ -35,8 +37,6 @@ async def handle_submit_post_callback(query: CallbackQuery):
 
     chat_id = query.message.chat.id
     msg_id = query.message.message_id
-
-    user = query.user
 
     if 'anymouse_' in data:
         anymouse = data == SubmitPostKey.anymouse_on
@@ -57,10 +57,6 @@ async def handle_submit_post_callback(query: CallbackQuery):
             )
             return
 
-        # if post.poster.user_id != user.user_id:
-        #     await query.answer('仅限本人操作')
-        #     return
-
         if data == SubmitPostKey.cancel:
             await query.answer('投稿已取消')
             await bot.edit_message_text(
@@ -73,31 +69,69 @@ async def handle_submit_post_callback(query: CallbackQuery):
                 'status': Post_Status.Cancel,
                 'source': '',
                 'files': '',
+                'tags': ''
             })
 
         elif '_post' in data:
+            user = query.user
 
             if post.status == Post_Status.Padding:
                 anymouse = data == SubmitPostKey.post_anymouse
 
-                review_mid = await bot.forward_message(
-                    chat_id=CFG.Review_Group,
-                    from_chat_id=chat_id,
-                    message_id=post.origin_mid
-                )
+                files = post.files
 
-                keyboard = await RKH.get_tag_keyboard_short(0)
+                if len(files) <= 1:
+                    review_mid = await bot.forward_message(
+                        chat_id=CFG.Review_Group,
+                        from_chat_id=chat_id,
+                        message_id=post.origin_mid
+                    )
+
+                else:
+                    media = MediaGroup()
+
+                    cap = post.raw_caption
+
+                    for file in files:
+                        media.attach(InputMedia(
+                            type=file.file_type,
+                            media=file.file_id,
+                            caption=cap
+                        ))
+                        cap = None
+
+                    review_mid = await bot.send_media_group(
+                        chat_id=CFG.Review_Group,
+                        media=media
+                    )
+                    
+                    if len(review_mid) >1:
+                        review_mid = review_mid[0]
+
+                if 'NSFW' in post.raw_caption.upper():
+                    selected = 1
+                else:
+                    selected = 0
+
+                keyboard = await RKH.get_tag_keyboard_short(selected)
+
+                status = Post_Status.describe(Post_Status.Reviewing)
 
                 manage_mid = await bot.send_message(
                     chat_id=CFG.Review_Group,
                     text=(
-                        f'投稿人: {user.md_link()}'
+                        f'投稿人: {post.tags}\n'
+                        f'匿名: `{"是" if anymouse else "否"}`\n'
+                        '\n'
+                        f'状态: `{status}`\n'
+                        '更多帮助: /help'
                     ),
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=keyboard
                 )
 
                 post.update_from_dict({
+                    'anymouse_mode': anymouse,
                     'status': Post_Status.Reviewing,
                     'anymouse': anymouse,
                     'review_mid': review_mid,
@@ -106,13 +140,15 @@ async def handle_submit_post_callback(query: CallbackQuery):
 
                 await query.answer('稿件投递成功')
 
+                user.prefer_anymouse = anymouse
                 user.post_count += 1
 
                 await bot.edit_message_text(
                     chat_id=chat_id,
                     message_id=msg_id,
                     text=(
-                        f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
+                        f'稿件状态: `{status}`\n'
+                        f'匿名: `{"是" if post.anymouse else "否"}`\n'
                         f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
                     ),
                     parse_mode=ParseMode.MARKDOWN
@@ -153,11 +189,6 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
     else:
         raw_caption = caption = ''
 
-    if 'NSFW' in raw_caption.upper():
-        tags = 'NSFW'
-    else:
-        tags = ''
-
     forward_from = msg.forward_from_chat
 
     if forward_from and forward_from.type == 'channel':
@@ -172,17 +203,19 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
     if not files:
         files = ''
 
+    user = msg.user
+
     await Posts.create(
         origin_mid=msg.message_id,
         action_mid=msg2.message_id,
         review_mid=-msg.message_id,
         manage_mid=-msg2.message_id,
         anymouse_mode=False,
-        poster=msg.user,
+        poster=user,
         status=Post_Status.Padding,
         caption=caption,
         raw_caption=raw_caption,
-        tags=tags,
+        tags=user.md_link(),
         source=source,
         files=files
     )
@@ -217,7 +250,7 @@ async def handle_single_post(message: Message):
     await pre_create_new_post(message, resp, [file])
 
 
-async def handle_mulite_post(messages: List[Message]):
+async def handle_mulite_post(messages: List[Message], user: Users):
     files = []
 
     for msg in messages:
@@ -227,8 +260,9 @@ async def handle_mulite_post(messages: List[Message]):
             files.append(file)
 
     message = messages[0]
+    message.user = user
 
-    anymouse_mode = message.user.prefer_anymouse
+    anymouse_mode = user.prefer_anymouse
 
     keyboard = gen_submit_keyboard(anymouse_mode)
 

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-28 15:45:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-23 22:27:19
+# @LastEditTime : 2021-11-24 18:32:48
 # @Description  : 稿件标签
 '''
 
@@ -14,7 +14,7 @@ from tortoise import fields
 StaticTags: Dict[int, Tuple[str]] = {
     1: ('NSFW', 'NSFW'),
     2: ('朋友', '我有一个朋友'),
-    3: ('晚安', '晚安'),
+    4: ('晚安', '晚安'),
 }
 
 

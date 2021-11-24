@@ -2,23 +2,23 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 19:46:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:01:00
+# @LastEditTime : 2021-11-24 18:51:51
 # @Description  : 审核按钮
 '''
 from typing import Dict, List, Tuple
 from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon, InlineKeyboardMarkup
 from loguru import logger
 
-from utils.emojis import GHOST, SMILE, NO, YES, WATER
+from utils.emojis import GHOST, SMILE, NO, YES, WATER,CHECK,UNCHECK
 
 from models.tag import StaticTags
 from models.reason import Reasons
 
 
 class ReviewPostKey():
-    accept = 'rp_accept '  # 接受投稿
-    reject = 'rp_reject '  # 拒绝投稿
-    tag = 'rp_tag '  # 拒绝投稿
+    accept = 'rp_accept'  # 接受投稿
+    reject = 'rp_reject'  # 拒绝投稿
+    tag = 'rp_tag'  # 拒绝投稿
 
 
 class ReviewKeyboardsHelper():
@@ -60,10 +60,10 @@ class ReviewKeyboardsHelper():
             await self.prepare_modules()
 
         kbd = [
-            [IKButon((YES if selected & id else '') + name,
-                     callback_data=ReviewPostKey.tag + str(selected ^ id))
+            [IKButon((CHECK if selected & id else UNCHECK) + name,
+                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
                 for id, name in self.__tags_short],
-            [IKButon(text, callback_data=data + str(selected))
+            [IKButon(text, callback_data=f'{data} {selected}')
                 for text, data in self.__buttons]
         ]
 
@@ -74,10 +74,10 @@ class ReviewKeyboardsHelper():
             await self.prepare_modules()
 
         kbd = [
-            [IKButon((YES if selected & id else '') + name,
-                     callback_data=ReviewPostKey.tag + str(selected ^ id))
+            [IKButon((CHECK if selected & id else UNCHECK) + name,
+                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
                 for id, name in self.__tags_full],
-            [IKButon(text, callback_data=data + str(selected))
+            [IKButon(text, callback_data=f'{data} {selected}')
                 for text, data in self.__buttons]
         ]
 

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 14:18:32
+# @LastEditTime : 2021-11-24 21:12:23
 # @Description  : 启动入口
 '''
 
@@ -33,14 +33,16 @@ from middleware.largest_photo import LargestPhoto
 def main():
     '''启动函数'''
 
-    bot = Bot(token=CFG.Bot_Token)
+    bot = Bot(token=CFG.Bot_Token, proxy='socks5://127.0.0.1:1080')
 
     if not CFG.Mongo:
         if CFG.DEBUG_MODE:
             storge = MemoryStorage()
             logger.warning('Using Memory for storage.')
         else:
-            storge = RedisStorage2()
+            storge = RedisStorage2(
+                state_ttl=3600, data_ttl=3600, bucket_ttl=3600,
+            )
             logger.info('Using Redis for storage.')
     else:
         storge = MongoStorage(uri=CFG.Mongo_URL)

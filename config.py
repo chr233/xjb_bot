@@ -3,7 +3,7 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-22 21:25:28
+# @LastEditTime : 2021-11-25 00:19:38
 # @Description  : 全局配置
 '''
 
@@ -32,7 +32,7 @@ class Config(BS):
 
     Mongo_URL: str = None
 
-    Generate_Schemas: bool = True
+    Generate_Schemas: bool = False
 
     PROXY: Union[str, None] = None
 
