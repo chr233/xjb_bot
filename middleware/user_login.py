@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-22 23:19:41
+# @LastEditTime : 2021-11-24 14:27:04
 # @Description  : 用户登录中间件
 '''
 
@@ -66,12 +66,13 @@ class UserLogin(BaseMiddleware):
         unick = from_user.full_name
         uname = from_user.mention
 
-        user = await self.get_user(uid, unick, uname)
 
         if from_user.is_bot:
             logger.debug(f'阻止机器人用户 @{uname} {unick}')
             return CancelHandler()
 
+        user = await self.get_user(uid, unick, uname)
+        
         if user.is_ban:
             logger.debug(f'阻止被Ban用户 {user}')
             await message.reply('您已被限制访问')
@@ -93,11 +94,11 @@ class UserLogin(BaseMiddleware):
         unick = from_user.full_name
         uname = from_user.mention
 
-        user = await self.get_user(uid, unick, uname)
-
         if from_user.is_bot:
             logger.debug(f'阻止机器人用户 @{uname} {unick}')
             return CancelHandler()
+
+        user = await self.get_user(uid, unick, uname)
 
         if user.is_ban:
             logger.debug(f'阻止被Ban用户 {user}')

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:41:01
+# @LastEditTime : 2021-11-24 12:09:25
 # @Description  : 用户投稿
 '''
 
@@ -11,6 +11,7 @@ from tortoise import fields
 from enum import IntEnum
 
 from custom import custom_fields
+
 
 class Post_Types(IntEnum):
     '''
@@ -76,7 +77,7 @@ class Posts(Model):
     status = fields.IntEnumField(
         enum_type=Post_Status, default=Post_Status.Default
     )  # 稿件状态
-    
+
     post_type = fields.IntEnumField(
         enum_type=Post_Types, default=Post_Types.Default
     )  # 稿件类型
@@ -85,6 +86,8 @@ class Posts(Model):
     raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
 
     tags = fields.CharField(max_length=255, default='')  # 标签列表, 纯文本储存, 逗号分隔
+
+    files = custom_fields.FileObjField(default='')  # 文件列表
 
     source = custom_fields.LinkObjField(default='')  # 消息来源,为空代表消息来自投稿者
 

@@ -1,14 +1,6 @@
-'''
-# @Author       : Chr_
-# @Date         : 2021-11-03 00:28:52
-# @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:57:22
-# @Description  : 自定义消息处理器（WIP）
-'''
-
 import asyncio
 from functools import wraps
-from typing import Callable, Optional
+from typing import TYPE_CHECKING, Callable, Optional
 
 from aiogram import types, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage as AiogramMemoryStorage
@@ -17,6 +9,13 @@ from aiogram.contrib.fsm_storage.redis import (
     RedisStorage2 as AiogramRedis2Storage,
 )
 from aiogram.dispatcher import FSMContext
+
+from aiogram_media_group.storages.base import BaseStorage
+from aiogram_media_group.storages.memory import MemoryStorage
+from aiogram_media_group.storages.redis import RedisStorage
+
+if TYPE_CHECKING:
+    import aioredis
 
 
 async def _get_storage_from_state(state: FSMContext, prefix, ttl):

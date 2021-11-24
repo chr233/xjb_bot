@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 15:13:24
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-08 19:10:51
+# @LastEditTime : 2021-11-24 00:54:21
 # @Description  : 自动选择最大的图片
 '''
 
@@ -33,9 +33,8 @@ class LargestPhoto(BaseMiddleware):
         largest = photos[0]
 
         if len(photos) > 1:
-
             for i in range(1, len(photos)):
                 if photos[i].file_size > largest.file_size:
                     largest = photos[i]
 
-        message.Lphoto = largest
+        message.largest_photo = largest

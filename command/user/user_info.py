@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 15:56:39
+# @LastEditTime : 2021-11-24 15:05:46
 # @Description  : 用户信息
 '''
 
@@ -29,20 +29,20 @@ async def handle_myinfo(message: Message):
     review = user.review_count
     exp = user.exp_count
 
-    info = '\n'.join([
-        f"昵称: `{nick}`",
-        f"等级: `{level}`",
-        f"权限: `{right}`",
-        f"徽章: `{badges}`",
-        "="*15,
-        f'采用稿件: `{accept}`',
-        f'被拒稿件: `{reject}`',
-        f'投稿总数: `{post}`',
-        f'审核总数: `{review}`',
-        f'评价总数: `{rating}`',
-        "="*15,
-        f"经验: `{exp}`",
+    info = (
+        f"昵称: `{nick}`\n"
+        f"等级: `{level}`\n"
+        f"权限: `{right}`\n"
+        f"徽章: `{badges}`\n"
+        "==============="
+        f'采用稿件: `{accept}`\n'
+        f'被拒稿件: `{reject}`\n'
+        f'投稿总数: `{post}`\n'
+        f'审核总数: `{review}`\n'
+        f'评价总数: `{rating}`\n'
+        "==============="
+        f"经验: `{exp}`"
         '投稿、审核、评分都可以获得经验哦'
-    ])
+    )
 
     await message.reply(info, parse_mode=ParseMode.MARKDOWN)

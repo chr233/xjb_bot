@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-10 23:53:35
+# @LastEditTime : 2021-11-24 15:11:17
 # @Description  : 权限控制
 '''
 
@@ -56,7 +56,7 @@ def check_permission(right: Rights, permission: Permissions):
         return False
 
 
-def need_permission(permission: Permissions):
+def msg_need_permission(permission: Permissions):
     '''
     权限检查装饰器
     '''
@@ -70,6 +70,26 @@ def need_permission(permission: Permissions):
             else:
                 logger.debug(f'鉴权失败 {paylaod.user}')
                 await paylaod.reply('没有权限')
+
+        return wrapper
+
+    return decorator
+
+
+def query_need_permission(permission: Permissions):
+    '''
+    权限检查装饰器
+    '''
+
+    def decorator(callback):
+        @wraps(callback)
+        async def wrapper(paylaod: Union[types.Message, types.CallbackQuery]):
+
+            if check_permission(paylaod.user.right, permission):
+                await callback(paylaod)
+            else:
+                logger.debug(f'鉴权失败 {paylaod.user}')
+                await paylaod.answer('没有权限')
 
         return wrapper
 

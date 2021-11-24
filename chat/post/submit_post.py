@@ -2,14 +2,14 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:11
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:12:04
+# @LastEditTime : 2021-11-24 15:32:34
 # @Description  : 处理投稿
 '''
 
 from typing import List
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.types.callback_query import CallbackQuery
-from aiogram.types.message import Message
+from aiogram.types.message import Message, ParseMode
 from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMarkup
 from buttons.review import RKH, ReviewKeyboardsHelper
 from models.base_model import FileObj, SourceLink
@@ -18,14 +18,12 @@ from aiogram.utils.exceptions import InvalidQueryID
 from models.post import Posts, Post_Status
 
 from buttons.submit import SubmitPostKey, gen_submit_keyboard
+from models.user import Users
 from utils.emojis import GHOST, NO, SMILE
+from utils.largest_media import find_largest_media
 from utils.regex_helper import pure_caption
 
 from config import CFG
-
-
-async def submit_new_post(message: Message):
-    ...
 
 
 async def handle_submit_post_callback(query: CallbackQuery):
@@ -78,7 +76,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
             })
 
         elif '_post' in data:
-            user = query.user
+
             if post.status == Post_Status.Padding:
                 anymouse = data == SubmitPostKey.post_anymouse
 
@@ -93,8 +91,9 @@ async def handle_submit_post_callback(query: CallbackQuery):
                 manage_mid = await bot.send_message(
                     chat_id=CFG.Review_Group,
                     text=(
-                        f'投稿人: {post.poster.md_link}'
+                        f'投稿人: {user.md_link()}'
                     ),
+                    parse_mode=ParseMode.MARKDOWN,
                     reply_markup=keyboard
                 )
 
@@ -113,30 +112,41 @@ async def handle_submit_post_callback(query: CallbackQuery):
                     chat_id=chat_id,
                     message_id=msg_id,
                     text=(
-                        f'稿件状态: {str(Post_Status.Reviewing)}\n'
-                        f'采用数/总投稿: {user.accept_count}/{user.post_count}'
-                    )
+                        f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
+                        f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
+                    ),
+                    parse_mode=ParseMode.MARKDOWN
                 )
 
                 await user.save()
 
             else:
                 await query.answer('请不要重复提交')
-                await bot.edit_message_reply_markup(
+                await bot.edit_message_text(
                     chat_id=chat_id,
-                    message_id=msg_id
+                    message_id=msg_id,
+                    text=(
+                        f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
+                        f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
+                    ),
+                    parse_mode=ParseMode.MARKDOWN
                 )
         else:
             await query.answer('未知操作')
+            await bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=msg_id,
+            )
             return
 
         await post.save()
 
 
-async def create_new_post(msg: Message, msg2: Message):
+async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] = None):
     '''
-    发布投稿
+    发布投稿(需要确认后发送至审核频道)
     '''
+
     raw_caption = msg.text
     if raw_caption:
         caption = pure_caption(raw_caption)
@@ -159,27 +169,7 @@ async def create_new_post(msg: Message, msg2: Message):
     else:
         source = ''
 
-    content_type = msg.content_type
-
-    if content_type != 'text':
-        files = []
-
-        medias = msg[content_type]
-
-        if content_type == 'photo':
-            medias = medias[-1:]
-
-        for media in medias:
-            files .append(
-                FileObj(
-                    file_id=media.file_id,
-                    file_uid=media.file_unique_id,
-                    file_size=media.file_size,
-                    height=media.height,
-                    width=media.width
-                )
-            )
-    else:
+    if not files:
         files = ''
 
     await Posts.create(
@@ -198,7 +188,7 @@ async def create_new_post(msg: Message, msg2: Message):
     )
 
 
-async def handle_text(message: Message):
+async def handle_text_message(message: Message):
     # await message.reply('暂不支持文字投稿哟~')
     # raise CancelHandler()
 
@@ -208,7 +198,10 @@ async def handle_text(message: Message):
 
     resp = await message.reply('确定要投稿吗？\n\n可以选择是否保留来源', reply_markup=keyboard)
 
-    await create_new_post(message, resp)
+    # content_type = message.content_type
+    # file = find_largest_media(message[content_type])
+
+    await pre_create_new_post(message, resp, None)
 
 
 async def handle_single_post(message: Message):
@@ -218,8 +211,27 @@ async def handle_single_post(message: Message):
 
     resp = await message.reply('确定要投稿吗？\n\n可以选择是否保留来源', reply_markup=keyboard)
 
-    await create_new_post(message, resp)
+    content_type = message.content_type
+    file = find_largest_media(message[content_type])
+
+    await pre_create_new_post(message, resp, [file])
 
 
 async def handle_mulite_post(messages: List[Message]):
-    await messages[0].reply('233')
+    files = []
+
+    for msg in messages:
+        content_type = msg.content_type
+        file = find_largest_media(msg[content_type])
+        if file:
+            files.append(file)
+
+    message = messages[0]
+
+    anymouse_mode = message.user.prefer_anymouse
+
+    keyboard = gen_submit_keyboard(anymouse_mode)
+
+    resp = await message.reply('确定要投稿吗？\n\n可以选择是否保留来源', reply_markup=keyboard)
+
+    await pre_create_new_post(message, resp, files)

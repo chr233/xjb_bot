@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-22 23:29:16
+# @LastEditTime : 2021-11-24 14:18:32
 # @Description  : 启动入口
 '''
 
@@ -51,7 +51,7 @@ def main():
     dispatcher.middleware.setup(UserLogin())
     # dispatcher.middleware.setup(LargestPhoto())
     # dispatcher.middleware.setup(LoggingMiddleware())
-    dispatcher.register_errors_handler(error_handler)
+    # dispatcher.register_errors_handler(error_handler)
 
     startups = [
         init_orm,
