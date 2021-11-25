@@ -12,7 +12,7 @@ from .static import BOT_MSG, VER_MSG, CMD_HELP
 
 async def handle_start(message: Message):
 
-    await message.reply(BOT_MSG, parse_mode=ParseMode.MARKDOWN)
+    await message.reply(BOT_MSG, parse_mode=ParseMode.MARKDOWN_V2)
 
 
 async def handle_help(message: Message):
@@ -27,9 +27,9 @@ async def handle_help(message: Message):
     else:
         msg = CMD_HELP['NULL'] 
 
-    await message.reply(msg, parse_mode=ParseMode.MARKDOWN)
+    await message.reply(msg, parse_mode=ParseMode.MARKDOWN_V2)
 
 
 async def handle_version(message: Message):
 
-    await message.reply(VER_MSG, parse_mode=ParseMode.MARKDOWN)
+    await message.reply(VER_MSG, parse_mode=ParseMode.MARKDOWN_V2)

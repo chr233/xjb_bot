@@ -2,10 +2,11 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:08:18
+# @LastEditTime : 2021-11-26 01:04:38
 # @Description  : 用户信息
 '''
 
+from aiogram.utils.markdown import escape_md
 from tortoise.models import Model
 from tortoise import fields
 
@@ -70,4 +71,4 @@ class Users(Model):
         return f'@{self.id} | #{self.user_id} | {self.user_nick}'
 
     def md_link(self)->str:
-        return f'[{self.user_nick}](https://t.me/{self.user_name})'
+        return f'[{escape_md(self.user_nick)}](https://t.me/{self.user_name})'

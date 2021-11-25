@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:11
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-25 00:54:58
+# @LastEditTime : 2021-11-26 01:12:23
 # @Description  : 处理投稿
 '''
 
@@ -16,6 +16,8 @@ from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMa
 from buttons.review import RKH, ReviewKeyboardsHelper
 from models.base_model import FileObj, SourceLink
 from aiogram.utils.exceptions import InvalidQueryID
+from aiogram.utils.markdown import escape_md
+
 
 from models.post import Posts, Post_Status
 
@@ -38,6 +40,27 @@ async def handle_submit_post_callback(query: CallbackQuery):
     chat_id = query.message.chat.id
     msg_id = query.message.message_id
 
+    user = query.user
+
+    post = await Posts.get_or_none(action_mid=msg_id)
+
+    if not post:
+        await query.answer('投稿不存在')
+        await bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=msg_id,
+            text='投稿不存在',
+        )
+        return
+
+    if post.status != Post_Status.Padding:
+        await query.answer('请不要重复操作')
+        status = Post_Status.describe(Post_Status.Reviewing)
+        await bot.edit_message_reply_markup(
+            chat_id=chat_id,
+            message_id=msg_id,
+        )
+
     if 'anymouse_' in data:
         anymouse = data == SubmitPostKey.anymouse_on
 
@@ -46,16 +69,6 @@ async def handle_submit_post_callback(query: CallbackQuery):
         await query.answer('已开启匿名模式' if anymouse else '已关闭匿名模式',)
         await bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=kbd)
     else:
-        post = await Posts.get_or_none(action_mid=msg_id)
-
-        if not post:
-            await query.answer('投稿不存在')
-            await bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=msg_id,
-                text='投稿不存在',
-            )
-            return
 
         if data == SubmitPostKey.cancel:
             await query.answer('投稿已取消')
@@ -73,8 +86,6 @@ async def handle_submit_post_callback(query: CallbackQuery):
             })
 
         elif '_post' in data:
-            user = query.user
-
             if post.status == Post_Status.Padding:
                 anymouse = data == SubmitPostKey.post_anymouse
 
@@ -100,13 +111,13 @@ async def handle_submit_post_callback(query: CallbackQuery):
                         ))
                         cap = None
 
-                    review_mid = await bot.send_media_group(
+                    review_mids = await bot.send_media_group(
                         chat_id=CFG.Review_Group,
                         media=media
                     )
-                    
-                    if len(review_mid) >1:
-                        review_mid = review_mid[0]
+
+                    # 只取第一个消息对象
+                    review_mid = review_mids[0]
 
                 if 'NSFW' in post.raw_caption.upper():
                     selected = 1
@@ -126,7 +137,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
                         f'状态: `{status}`\n'
                         '更多帮助: /help'
                     ),
-                    parse_mode=ParseMode.MARKDOWN,
+                    parse_mode=ParseMode.MARKDOWN_V2,
                     reply_markup=keyboard
                 )
 
@@ -151,7 +162,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
                         f'匿名: `{"是" if post.anymouse else "否"}`\n'
                         f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
                     ),
-                    parse_mode=ParseMode.MARKDOWN
+                    parse_mode=ParseMode.MARKDOWN_V2
                 )
 
                 await user.save()
@@ -165,7 +176,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
                         f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
                         f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
                     ),
-                    parse_mode=ParseMode.MARKDOWN
+                    parse_mode=ParseMode.MARKDOWN_V2
                 )
         else:
             await query.answer('未知操作')
@@ -183,7 +194,13 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
     发布投稿(需要确认后发送至审核频道)
     '''
 
-    raw_caption = msg.text
+    if msg.content_type == 'text':
+        raw_caption = msg.text
+    else:
+        raw_caption = msg.caption
+
+    raw_caption = escape_md(raw_caption)
+
     if raw_caption:
         caption = pure_caption(raw_caption)
     else:
@@ -245,7 +262,16 @@ async def handle_single_post(message: Message):
     resp = await message.reply('确定要投稿吗？\n\n可以选择是否保留来源', reply_markup=keyboard)
 
     content_type = message.content_type
-    file = find_largest_media(message[content_type])
+    if content_type == 'photo':
+        file = find_largest_media(message.photo)
+    else:
+        media_obj = message[content_type]
+        file = FileObj(
+            file_id=media_obj.file_id,
+            file_uid=media_obj.file_unique_id,
+            file_type=content_type,
+            file_size=media_obj.file_size,
+        )
 
     await pre_create_new_post(message, resp, [file])
 

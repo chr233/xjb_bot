@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-01 15:02:02
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 00:29:45
+# @LastEditTime : 2021-11-26 00:42:08
 # @Description  : 基础数据类型
 '''
 
@@ -17,8 +17,8 @@ class FileObj(BaseModel):
     file_uid: str = ''
     file_size: str = 0
     file_type: str = 'photo'
-    width: int = 0
-    height: int = 0
+    # width: int = 0
+    # height: int = 0
 
     def __str__(self) -> str:
         return self.file_uid

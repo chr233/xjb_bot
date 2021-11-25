@@ -41,4 +41,4 @@ async def handle_get_chat_id(message: Message):
             f'拒稿频道: {md_link(rc)}\n'
             f'审核群组: {md_link(rg)}\n'
         ),
-        parse_mode=ParseMode.MARKDOWN)
+        parse_mode=ParseMode.MARKDOWN_V2)

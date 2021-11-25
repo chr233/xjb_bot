@@ -45,4 +45,4 @@ async def handle_myinfo(message: Message):
         '投稿、审核、评分都可以获得经验哦'
     )
 
-    await message.reply(info, parse_mode=ParseMode.MARKDOWN)
+    await message.reply(info, parse_mode=ParseMode.MARKDOWN_V2)
