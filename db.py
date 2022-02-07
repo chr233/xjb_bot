@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 15:02:59
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-25 00:19:44
+# @LastEditTime : 2022-02-07 14:36:36
 # @Description  : 数据库相关
 '''
 
@@ -23,7 +23,7 @@ async def init_orm(*args, **kwargs):
                 'models.badge',
                 'models.level',
                 'models.post',
-                'models.rating',
+                # 'models.rating',
                 'models.reason',
                 'models.right',
                 # 'models.tag',

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-03 17:48:24
+# @LastEditTime : 2022-02-07 14:32:53
 # @Description  : 用户评分
 '''
 from enum import IntEnum
@@ -15,7 +15,7 @@ class RatingValue(IntEnum):
     '''
     评分类型
     '''
-    
+
     Default = 0
     LIKE = 1     # 喜欢
     CAO = 2      # 生草
@@ -26,6 +26,7 @@ class RatingValue(IntEnum):
         return self.name
 
 
+# 弃用
 class Ratings(Model):
     '''稿件评分模型'''
     id = fields.IntField(pk=True)
@@ -46,7 +47,7 @@ class Ratings(Model):
 
     class Mate:
         table = "ratings"
-        indexes  = (
+        indexes = (
             ("post", "user"),
         )
         unique_together = (

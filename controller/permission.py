@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 15:11:17
+# @LastEditTime : 2022-02-07 16:57:12
 # @Description  : 权限控制
 '''
 
@@ -14,6 +14,7 @@ from loguru import logger
 
 from models.right import Rights
 
+from config import CFG
 
 class Permissions(IntEnum):
     '''

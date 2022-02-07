@@ -54,13 +54,13 @@ class Users(Model):
     review_count = fields.IntField(default=0)  # 审核总数
 
     exp_count = fields.IntField(default=0)     # 经验值
-    rating_count = fields.IntField(default=0)  # 评分数
+    # rating_count = fields.IntField(default=0)  # 评分数
 
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 
     posts: fields.ReverseRelation["Posts"]
-    ratings: fields.ReverseRelation["Ratings"]
+    # ratings: fields.ReverseRelation["Ratings"]
     reviews_accept: fields.ReverseRelation["PublicPosts"]
     reviews_reject: fields.ReverseRelation["RejectPosts"]
 

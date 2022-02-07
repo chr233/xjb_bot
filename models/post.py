@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 18:47:03
+# @LastEditTime : 2022-02-07 16:57:46
 # @Description  : 用户投稿
 '''
 
@@ -128,8 +128,8 @@ class PublicPosts(Model):
     mars = fields.IntField(default=0)  # 火星数
     dislike = fields.IntField(default=0)  # 差评数
 
-    rating_count = fields.IntField(default=0)  # 评价总数
-    rating_score = fields.FloatField(default=0)  # 总评分
+    # rating_count = fields.IntField(default=0)  # 评价总数
+    # rating_score = fields.FloatField(default=0)  # 总评分
 
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
