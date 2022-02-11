@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:11
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-26 01:12:23
+# @LastEditTime : 2022-02-11 18:50:28
 # @Description  : 处理投稿
 '''
 
@@ -239,6 +239,7 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
 
 
 async def handle_text_message(message: Message):
+    '''处理文字投稿'''
     # await message.reply('暂不支持文字投稿哟~')
     # raise CancelHandler()
 
@@ -247,9 +248,6 @@ async def handle_text_message(message: Message):
     keyboard = gen_submit_keyboard(anymouse_mode)
 
     resp = await message.reply('确定要投稿吗？\n\n可以选择是否保留来源', reply_markup=keyboard)
-
-    # content_type = message.content_type
-    # file = find_largest_media(message[content_type])
 
     await pre_create_new_post(message, resp, None)
 

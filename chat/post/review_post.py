@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:25:18
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-26 01:24:31
+# @LastEditTime : 2022-02-11 18:28:37
 # @Description  : 审核投稿
 '''
 
@@ -21,7 +21,9 @@ from utils.emojis import NO, YES
 
 
 async def handle_review_post_callback(query: CallbackQuery):
-
+    '''
+    投稿审核按钮回调
+    '''
     data = query.data
     bot = query.bot
 

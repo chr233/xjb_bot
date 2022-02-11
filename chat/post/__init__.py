@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 14:23:19
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 23:17:22
+# @LastEditTime : 2022-02-11 15:51:01
 # @Description  : 接受投稿
 '''
 
@@ -13,6 +13,7 @@ from aiogram.types.message import ContentType, Message
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import filters, Dispatcher
 from aiogram.dispatcher.filters import ChatTypeFilter, MediaGroupFilter
+from aiogram.dispatcher.handler import CancelHandler
 
 from controller.permission import msg_need_permission, query_need_permission, Permissions
 from custom.media_group_handler import media_group_handler
@@ -31,7 +32,7 @@ async def setup(dp: Dispatcher, *args, **kwargs):
 
     # 审核回调
     @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('rp_'))
-    @query_need_permission(permission=Permissions.Review)
+    @query_need_permission(permission=Permissions.ReviewPost)
     async def _(callback_query: CallbackQuery):
         ...
         await handle_review_post_callback(callback_query)
@@ -40,6 +41,10 @@ async def setup(dp: Dispatcher, *args, **kwargs):
     @dp.message_handler(ChatTypeFilter('private'), content_types=ContentType.TEXT)
     @msg_need_permission(permission=Permissions.Cmd)
     async def _(message: Message):
+        if message.text.startswith('/'):
+            await message.reply('未知命令, 请使用 /help 查看帮助')
+            raise CancelHandler()
+        
         await handle_text_message(message)
 
     @dp.message_handler(ChatTypeFilter('private'), MediaGroupFilter(False), content_types=ContentType.ANY)
