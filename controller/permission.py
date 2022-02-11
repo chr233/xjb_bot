@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-07 16:57:12
+# @LastEditTime : 2022-02-11 22:08:45
 # @Description  : 权限控制
 '''
 
@@ -16,16 +16,18 @@ from models.right import Rights
 
 from config import CFG
 
+SUPER_ADMIN = CFG.Super_Admin
+
+
 class Permissions(IntEnum):
     '''
     权限类型
     '''
     Null = 0
     Post = 1
-    Rating = 2
-    Review = 3
-    AutoApproval = 4
-    OneVote = 5
+    ReviewPost = 2
+    DirectPost = 3
+    RetractPost = 4
     Cmd = 10
     AdminCmd = 20
     SuperCmd = 30
@@ -39,14 +41,12 @@ def check_permission(right: Rights, permission: Permissions):
         return True
     elif permission == Permissions.Post:
         return right.can_post
-    elif permission == Permissions.Rating:
-        return right.can_rating
-    elif permission == Permissions.Review:
+    elif permission == Permissions.ReviewPost:
         return right.can_review
-    elif permission == Permissions.AutoApproval:
-        return right.can_auto_approval
-    elif permission == Permissions.OneVote:
-        return right.can_one_vote
+    elif permission == Permissions.DirectPost:
+        return right.can_direct_post
+    elif permission == Permissions.RetractPost:
+        return right.can_retract_post
     elif permission == Permissions.Cmd:
         return right.can_use_cmd
     elif permission == Permissions.AdminCmd:
@@ -66,7 +66,11 @@ def msg_need_permission(permission: Permissions):
         @wraps(callback)
         async def wrapper(paylaod: Union[types.Message, types.CallbackQuery]):
 
-            if check_permission(paylaod.user.right, permission):
+            user = paylaod.user
+
+            if check_permission(user.right, permission):
+                await callback(paylaod)
+            elif user.user_id in SUPER_ADMIN:
                 await callback(paylaod)
             else:
                 logger.debug(f'鉴权失败 {paylaod.user}')
@@ -90,7 +94,7 @@ def query_need_permission(permission: Permissions):
                 await callback(paylaod)
             else:
                 logger.debug(f'鉴权失败 {paylaod.user}')
-                await paylaod.answer('没有权限')
+                await paylaod.answer('')
 
         return wrapper
 

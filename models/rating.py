@@ -2,8 +2,8 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:12:00
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-07 14:32:53
-# @Description  : 用户评分
+# @LastEditTime : 2022-02-11 18:33:10
+# @Description  : 用户评分【弃用】
 '''
 from enum import IntEnum
 

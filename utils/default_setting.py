@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:22:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-02 10:32:15
+# @LastEditTime : 2022-02-12 02:06:43
 # @Description  : 初始化数据库
 '''
 
@@ -12,6 +12,28 @@ from loguru import logger
 from models.level import Levels
 from models.right import Rights
 
+
+__BUILDIN_RIGHTS = (
+    # 第一个为默认
+    # 显示名       post review direct retract cmd admin super
+    ('默认权限',   1, 1, 0, 0,                1, 0, 0),
+    ('封禁用户',   0, 0, 0, 0,                0, 0, 0),
+    ('审核员',     1, 1, 1, 0,                1, 0, 0),
+    ('管理员',     1, 1, 1, 1,                1, 1, 0),
+    ('超级管理员', 1, 1, 1, 1,                1, 1, 1),
+)
+
+__BUILDIN_LEVEL = (
+    # 第一个为默认
+    # 显示名  min_exp max_exp
+    ('Lv 0', 0,      10),
+    ('Lv 1', 11,     100),
+    ('Lv 2', 101,    200),
+    ('Lv 3', 201,    500),
+    ('Lv 4', 501,    1000),
+    ('Lv 5', 1001,   5000),
+    ('Lv 6', 5001,   -1),
+)
 
 
 async def get_default_setting() -> Tuple[Levels, Rights]:
@@ -23,33 +45,48 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
     default_level = await Levels.filter(default=True).limit(1)
 
     if not default_level:  # 不存在就创建
-        default_level = await Levels.create(
-            default=True,
-            disp_name='Null',
-            min_exp=-1,
-            max_exp=-1,
-        )
-        logger.info('Create default level')
+        levels = []
+        for (name, a, b) in __BUILDIN_LEVEL:
+            level = await Levels.create(
+                default=False,
+                disp_name=name,
+                min_exp=a,
+                max_exp=b
+            )
+            levels.append(level)
+
+        default_level = levels[0]
+        default_level.default = True
+        await default_level.save()
+
+        logger.info(f'Create {len(levels)} levels')
     else:
-        default_level=default_level[0]
+        default_level = default_level[0]
 
     default_right = await Rights.filter(default=True).limit(1)
 
     if not default_right:  # 不存在就创建
-        default_right = await Rights.create(
-            default=True,
-            disp_name='默认权限',
-            can_post=True,
-            can_rating=True,
-            can_review=False,
-            can_auto_approval=False,
-            can_one_vote=False,
-            can_use_cmd=True,
-            can_use_admin_cmd=False,
-            can_use_super_cmd=False
-        )
-        logger.info('Create default right')
+        rights = []
+        for (name, a, b, c, d, e, f, g) in __BUILDIN_RIGHTS:
+            right = await Rights.create(
+                default=False,
+                disp_name=name,
+                can_post=a,
+                can_review=b,
+                can_direct_post=c,
+                can_retract_post=d,
+                can_use_cmd=e,
+                can_use_admin_cmd=f,
+                can_use_super_cmd=g,
+            )
+            rights.append(right)
+
+        default_right = rights[0]
+        default_right.default = True
+        await default_right.save()
+
+        logger.info(f'Create {len(rights)} rights')
     else:
-        default_right=default_right[0]
-    
+        default_right = default_right[0]
+
     return (default_level, default_right)
