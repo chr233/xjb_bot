@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-07 16:57:46
+# @LastEditTime : 2022-02-12 13:09:55
 # @Description  : 用户投稿
 '''
 
@@ -34,6 +34,7 @@ class Post_Status(IntEnum):
     Rejected = 4   # 投稿未过审
     Accepted = 5   # 已过审并发布
     Wating = 6     # 已过审但是等待发布(色图排期)
+    Retract =7     # 已撤回
 
 
     @staticmethod
@@ -52,6 +53,8 @@ class Post_Status(IntEnum):
             return '已采用'
         elif value == 6:
             return '已采用,色图排期'
+        elif value == 6:
+            return '已撤回'
         else:
             return '未知'
 

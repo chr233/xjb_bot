@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:22:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 02:06:43
+# @LastEditTime : 2022-02-12 14:00:35
 # @Description  : 初始化数据库
 '''
 
@@ -16,7 +16,7 @@ from models.right import Rights
 __BUILDIN_RIGHTS = (
     # 第一个为默认
     # 显示名       post review direct retract cmd admin super
-    ('默认权限',   1, 1, 0, 0,                1, 0, 0),
+    ('用户',       1, 1, 0, 0,                1, 0, 0),
     ('封禁用户',   0, 0, 0, 0,                0, 0, 0),
     ('审核员',     1, 1, 1, 0,                1, 0, 0),
     ('管理员',     1, 1, 1, 1,                1, 1, 0),

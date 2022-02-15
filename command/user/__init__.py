@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 15:42:27
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 00:37:05
+# @LastEditTime : 2022-02-15 15:34:40
 # @Description  : 用户命令
 '''
 
@@ -14,7 +14,7 @@ from controller.permission import Permissions, msg_need_permission
 
 from .myinfo import handle_myinfo
 from .help import handle_help
-from .common import handle_start, handle_version
+from .veriosn import handle_start, handle_version
 
 
 async def setup(dp: Dispatcher, *args, **kwargs):

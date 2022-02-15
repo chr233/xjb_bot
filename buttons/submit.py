@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 19:46:39
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-23 00:27:29
+# @LastEditTime : 2022-02-12 17:17:29
 # @Description  : 投稿按钮
 '''
 
@@ -16,7 +16,7 @@ class SubmitPostKey():
     anymouse_off = 'sp_anymouse_off'    # 实名模式
     cancel = 'sp_cancel'                # 取消投稿
     post = 'sp_post'                    # 投稿
-    post_anymouse = 'sp_post_anymouse'  # 匿名投稿
+    post_anymouse = 'sp_post_anymouse'  # 投稿(匿名模式)
 
 
 __submit_post_kbd_named = [

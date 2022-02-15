@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-11 22:08:45
+# @LastEditTime : 2022-02-12 12:41:40
 # @Description  : 权限控制
 '''
 
@@ -94,7 +94,7 @@ def query_need_permission(permission: Permissions):
                 await callback(paylaod)
             else:
                 logger.debug(f'鉴权失败 {paylaod.user}')
-                await paylaod.answer('')
+                await paylaod.answer('无权操作')
 
         return wrapper
 

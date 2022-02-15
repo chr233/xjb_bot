@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 13:26:30
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-11 23:43:13
+# @LastEditTime : 2022-02-12 14:01:36
 # @Description  : 重置user_login模块
 '''
 
@@ -22,7 +22,7 @@ async def handle_reload(message: Message):
     user_login.ready = False
     await user_login.prepare_models()
 
-    await message.answer('初始化UserLogin完成')
+    await message.reply('初始化UserLogin完成')
 
 
 def md_link(chat: Chat) -> str:

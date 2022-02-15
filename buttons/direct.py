@@ -1,9 +1,9 @@
 '''
 # @Author       : Chr_
-# @Date         : 2021-11-03 19:46:43
+# @Date         : 2022-02-12 17:04:22
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 17:07:35
-# @Description  : 审核按钮
+# @LastEditTime : 2022-02-12 17:17:27
+# @Description  : 直发投稿
 '''
 
 from typing import Dict, List, Tuple
@@ -16,18 +16,20 @@ from models.tag import StaticTags
 from models.reason import Reasons
 
 
-class ReviewPostKey():
-    accept = 'rp_accept'  # 接受投稿
-    reject = 'rp_reject'  # 拒绝投稿
-    tag = 'rp_tag'  # 标签
+class DirectPostKey():
+    anymouse_on = 'dp_anymouse_on'      # 匿名模式
+    anymouse_off = 'dp_anymouse_off'    # 实名模式
+    cancel = 'dp_cancel'                # 取消投稿
+    post = 'dp_post'                    # 发布
+    post_anymouse = 'dp_post_anymouse'  # 发布(匿名模式)
+    tag = 'dp_tag'  # 标签
 
 
-class ReviewKeyboardsHelper():
+class DirectKeyboardsHelper():
     ready = False
 
     __tags_short: List[Tuple[int, str]] = None
     __tags_full: List[Tuple[int, str]] = None
-    __reason: List[str] = None
 
     __buttons: List[Tuple[str, str]] = None
 
@@ -48,14 +50,11 @@ class ReviewKeyboardsHelper():
         return ' '.join(tags)
 
     async def prepare_modules(self):
-        reasons = await Reasons.all()
-        self.__reason = [reason.reason for reason in reasons]
-
         self.__tags_short = [(x, y[0]) for x, y in StaticTags.items()]
         self.__tags_full = [(x, y[1]) for x, y in StaticTags.items()]
 
         self.__buttons = [
-            (f'{NO}拒绝', ReviewPostKey.reject), (f'{YES}采用', ReviewPostKey.accept)
+            (f'{NO}拒绝', DirectPostKey.reject), (f'{YES}采用', DirectPostKey.accept)
         ]
 
         logger.debug('初始化ReviewKeyboardsHelper完成')
@@ -68,7 +67,7 @@ class ReviewKeyboardsHelper():
 
         kbd = [
             [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
+                     callback_data=f'{DirectPostKey.tag} {selected ^ id}')
                 for id, name in self.__tags_short],
             [IKButon(text, callback_data=f'{data} {selected}')
                 for text, data in self.__buttons]
@@ -82,7 +81,7 @@ class ReviewKeyboardsHelper():
 
         kbd = [
             [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
+                     callback_data=f'{DirectPostKey.tag} {selected ^ id}')
                 for id, name in self.__tags_full],
             [IKButon(text, callback_data=f'{data} {selected}')
                 for text, data in self.__buttons]
@@ -91,4 +90,4 @@ class ReviewKeyboardsHelper():
         return InlineKeyboardMarkup(inline_keyboard=kbd)
 
 
-RKH = ReviewKeyboardsHelper()
+DKH = DirectKeyboardsHelper()
