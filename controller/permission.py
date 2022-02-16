@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-31 15:20:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 12:41:40
+# @LastEditTime : 2022-02-17 00:43:51
 # @Description  : 权限控制
 '''
 
@@ -37,6 +37,7 @@ def check_permission(right: Rights, permission: Permissions):
     '''
     检查是否有对应的权限
     '''
+    
     if permission == Permissions.Null:
         return True
     elif permission == Permissions.Post:

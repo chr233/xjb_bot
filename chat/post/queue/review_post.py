@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:23
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 00:24:32
+# @LastEditTime : 2022-02-17 00:57:23
 # @Description  : 
 '''
 
@@ -199,10 +199,11 @@ async def handle_review_post_callback(query: CallbackQuery):
             )
 
             p_user = await post.poster.get()
-            p_user.posts_accepted += 1
+            p_user.accept_count += 1
             await p_user.save()
             
-            print(p_user)
+            if(user.id == p_user.id):
+                user = p_user
 
         user.review_count += 1
         await user.save()
