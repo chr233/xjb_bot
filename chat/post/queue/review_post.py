@@ -2,10 +2,11 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:23
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 19:31:11
+# @LastEditTime : 2022-02-17 00:24:32
 # @Description  : 
 '''
 
+from html import escape
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
@@ -15,222 +16,68 @@ from buttons.review import RKH, ReviewPostKey
 from models.post import Posts, Post_Status, PublicPosts
 
 from config import CFG
-
-
-async def handle_direct_post_callback(query: CallbackQuery):
-    '''
-    处理投稿按钮回调
-    '''
-    data = query.data
-    bot = query.bot
-
-    chat_id = query.message.chat.id
-    msg_id = query.message.message_id
-
-    user = query.user
-
-    post = await Posts.get_or_none(action_mid=msg_id)
-
-    if not post:
-        await query.answer('投稿不存在')
-        await bot.edit_message_text(
-            chat_id=chat_id,
-            message_id=msg_id,
-            text='投稿不存在',
-        )
-        return
-
-    if post.status != Post_Status.Padding:
-        await query.answer('请不要重复操作')
-        status = Post_Status.describe(Post_Status.Reviewing)
-        await bot.edit_message_reply_markup(
-            chat_id=chat_id,
-            message_id=msg_id,
-        )
-
-    if 'anymouse_' in data:
-        anymouse = data == SubmitPostKey.anymouse_on
-
-        kbd = gen_submit_keyboard(anymouse)
-
-        await query.answer('已开启匿名模式' if anymouse else '已关闭匿名模式',)
-        await bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=kbd)
-    else:
-
-        if data == SubmitPostKey.cancel:
-            await query.answer('投稿已取消')
-            await bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=msg_id,
-                text='投稿已取消',
-            )
-            post.update_from_dict({
-                'caption': '',
-                'status': Post_Status.Cancel,
-                'source': '',
-                'files': '',
-                'tags': ''
-            })
-
-        elif '_post' in data:
-            if post.status == Post_Status.Padding:
-                anymouse = data == SubmitPostKey.post_anymouse
-
-                files = post.files
-
-                if len(files) <= 1:
-                    review_mid = await bot.forward_message(
-                        chat_id=CFG.Review_Group,
-                        from_chat_id=chat_id,
-                        message_id=post.origin_mid
-                    )
-
-                else:
-                    media = MediaGroup()
-
-                    cap = post.raw_caption
-
-                    for file in files:
-                        media.attach(InputMedia(
-                            type=file.file_type,
-                            media=file.file_id,
-                            caption=cap
-                        ))
-                        cap = None
-
-                    review_mids = await bot.send_media_group(
-                        chat_id=CFG.Review_Group,
-                        media=media
-                    )
-
-                    # 只取第一个消息对象
-                    review_mid = review_mids[0]
-
-                if 'NSFW' in post.raw_caption.upper():
-                    selected = 1
-                else:
-                    selected = 0
-
-                keyboard = await RKH.get_tag_keyboard_short(selected)
-
-                status = Post_Status.describe(Post_Status.Reviewing)
-
-                manage_mid = await bot.send_message(
-                    chat_id=CFG.Review_Group,
-                    text=(
-                        f'投稿人: {post.tags}\n'
-                        f'匿名: `{"是" if anymouse else "否"}`\n'
-                        '\n'
-                        f'状态: `{status}`\n'
-                        '更多帮助: /help'
-                    ),
-                    parse_mode=ParseMode.MARKDOWN_V2,
-                    reply_markup=keyboard
-                )
-
-                post.update_from_dict({
-                    'anymouse_mode': anymouse,
-                    'status': Post_Status.Reviewing,
-                    'anymouse': anymouse,
-                    'review_mid': review_mid,
-                    'manage_mid': manage_mid
-                })
-
-                await query.answer('稿件投递成功')
-
-                user.prefer_anymouse = anymouse
-                user.post_count += 1
-
-                await bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=msg_id,
-                    text=(
-                        f'稿件状态: `{status}`\n'
-                        f'匿名: `{"是" if post.anymouse else "否"}`\n'
-                        f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
-                    ),
-                    parse_mode=ParseMode.MARKDOWN_V2
-                )
-
-                await user.save()
-
-            else:
-                await query.answer('请不要重复提交')
-                await bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=msg_id,
-                    text=(
-                        f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
-                        f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
-                    ),
-                    parse_mode=ParseMode.MARKDOWN_V2
-                )
-        else:
-            await query.answer('未知操作')
-            await bot.edit_message_reply_markup(
-                chat_id=chat_id,
-                message_id=msg_id,
-            )
-            return
-
-        await post.save()
-
+from utils.fetch_tags import str_fetch_tagid, tagid_fetch_text
 
 
 async def handle_review_post_callback(query: CallbackQuery):
     '''
     投稿审核按钮回调
     '''
-    data = query.data
     bot = query.bot
+    msg = query.message
 
-    chat_id = query.message.chat.id
-    msg_id = query.message.message_id
+    chat_id = msg.chat.id
+    msg_id = msg.message_id
 
     user = query.user
-
-    try:
-        cmd, selected = data.split(' ')
-        selected = int(selected)
-    except ValueError:
-        cmd = data.strip()
-        selected = 0
-        # return
-
-    print(f'cmd: {cmd}, selected: {selected}')
 
     post = await Posts.get_or_none(manage_mid=msg_id)
 
     if not post:
+        # 未找到投稿记录
         await query.answer('投稿不存在')
         await bot.edit_message_text(
             chat_id=chat_id,
             message_id=msg_id,
             text='投稿不存在',
+            reply_markup=None
         )
         return
 
-    if post.status != Post_Status.Reviewing:
+    elif post.status != Post_Status.Reviewing:
+        # 投稿已经被处理
         await query.answer('请不要重复操作')
         await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg_id,
+            reply_markup=None
         )
         return
 
-    if cmd == ReviewPostKey.tag:
-
-        keyboard = await RKH.get_tag_keyboard_short(selected)
-
-        await bot.edit_message_reply_markup(
-            chat_id=chat_id,
-            message_id=msg_id,
-            reply_markup=keyboard
-        )
-
     else:
+        # 开始处理 data
+        data = query.data
 
-        if cmd == ReviewPostKey.reject:
+        if data.startswith(ReviewPostKey.tag):
+
+            tag = str_fetch_tagid(data)
+
+            tagnum = post.tags ^ tag
+            post.tags = tagnum
+            await post.save()
+
+            kbd = await RKH.gen_review_keyboard(tagnum)
+
+            await bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=msg_id,
+                reply_markup=kbd
+            )
+
+        elif data == ReviewPostKey.reject:
+            # 拒绝稿件
+            
+            await post.save()
             return
 
             # await RejectPosts.create(
@@ -239,107 +86,112 @@ async def handle_review_post_callback(query: CallbackQuery):
 
             # )
 
-        if cmd == ReviewPostKey.accept:
-            caption = []
+        elif data == ReviewPostKey.accept:
+            # 接受稿件
 
-            tags = await RKH.get_tag(selected)
+            post_caption = []
 
-            if tags:
-                caption.append(escape_md(tags))
+            tag_str = tagid_fetch_text(post.tags)
+            if tag_str:
+                post_caption.append(tag_str)
 
-            cap = post.caption
+            caption = post.caption
+            if caption:
+                post_caption.append(caption)
 
-            if cap:
-                caption.append(cap)
+            if len(post_caption) > 0:
+                post_caption.append('')
 
-            if len(caption) > 0:
-                caption.append('')
-
-            src = post.source
-            if src:
-                caption.append(f'from [{src.name[:15]}]({src.url})')
-            else:
-                if not post.anymouse:
-                    caption.append(f'via {post.tags} ')
-                # else:
-                    # source = ''
+            source = post.source
+            anymouse = post.anymouse
+            
+            s_link = source.md_link()
+            u_link = user.md_link()
+            
+            if post.forward:
+                if not anymouse:
+                    post_caption.append(f'from {s_link} via {u_link}')
+                else:
+                    post_caption.append(f'from {s_link}')
+                                           
+            elif not anymouse:
+                post_caption.append(f'via {u_link} ')
 
             files = post.files
 
-            caption = ('\n'.join(caption)).strip()
+            text = ('\n'.join(post_caption)).strip()
 
             if not files:  # 纯文本消息
                 post_mid = await bot.send_message(
                     chat_id=CFG.Accept_Channel,
-                    text=caption,
-                    parse_mode=ParseMode.MARKDOWN_V2,
+                    text=text,
+                    parse_mode=ParseMode.MARKDOWN,
                 )
 
             elif len(files) == 1:
                 file = files[0]
                 ftype = file.file_type
 
-                if ftype == 'photo':
-                    post_mid = await bot.send_photo(
-                        chat_id=CFG.Accept_Channel,
-                        photo=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    )
+                # if ftype == 'photo':
+                #     post_mid = await bot.send_photo(
+                #         chat_id=CFG.Accept_Channel,
+                #         photo=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     )
 
-                elif ftype == 'video':
-                    post_mid = await bot.send_video(
-                        chat_id=CFG.Accept_Channel,
-                        video=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    )
-                elif ftype == 'audio':
-                    post_mid =await bot.send_audio(
-                        chat_id=CFG.Accept_Channel,
-                        audio=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    )
-                elif ftype == 'document':
-                    post_mid =await bot.send_document(
-                        chat_id=CFG.Accept_Channel,
-                        document=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    )
-                else:
-                    post_mid = await bot.send_document(
-                        chat_id=CFG.Accept_Channel,
-                        document=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    )
+                # elif ftype == 'video':
+                #     post_mid = await bot.send_video(
+                #         chat_id=CFG.Accept_Channel,
+                #         video=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     )
+                # elif ftype == 'audio':
+                #     post_mid = await bot.send_audio(
+                #         chat_id=CFG.Accept_Channel,
+                #         audio=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     )
+                # elif ftype == 'document':
+                #     post_mid = await bot.send_document(
+                #         chat_id=CFG.Accept_Channel,
+                #         document=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     )
+                # else:
+                #     post_mid = await bot.send_document(
+                #         chat_id=CFG.Accept_Channel,
+                #         document=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     )
 
             else:
-                media = MediaGroup()
+                ...
+                # media = MediaGroup()
 
-                for file in files:
-                    media.attach(InputMedia(
-                        type=file.file_type,
-                        media=file.file_id,
-                        caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
-                    ))
-                    caption = None
+                # for file in files:
+                #     media.attach(InputFile(
+                #         type=file.file_type,
+                #         media=file.file_id,
+                #         caption=post_caption,
+                #         parse_mode=ParseMode.MARKDOWN
+                #     ))
+                #     post_caption = None
 
-                post_mids = await bot.send_media_group(
-                    chat_id=CFG.Review_Group,
-                    media=media
-                )
+                # post_mids = await bot.send_media_group(
+                #     chat_id=CFG.Review_Group,
+                #     media=media
+                # )
 
-                # 只取第一个消息对象
-                post_mid = post_mids[0]
+                # # 只取第一个消息对象
+                # post_mid = post_mids[0]
 
-            post.tags = ''
             post.status = Post_Status.Accepted
-            await user.save()
-
+    
             await PublicPosts.create(
                 message_id=post_mid.message_id,
                 post=post,
@@ -347,9 +199,10 @@ async def handle_review_post_callback(query: CallbackQuery):
             )
 
             p_user = await post.poster.get()
-
+            p_user.posts_accepted += 1
+            await p_user.save()
+            
             print(p_user)
 
         user.review_count += 1
         await user.save()
-        await post.save()

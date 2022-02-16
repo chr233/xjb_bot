@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:22:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 14:00:35
+# @LastEditTime : 2022-02-16 13:58:02
 # @Description  : 初始化数据库
 '''
 
@@ -26,6 +26,7 @@ __BUILDIN_RIGHTS = (
 __BUILDIN_LEVEL = (
     # 第一个为默认
     # 显示名  min_exp max_exp
+    ('Lv -', -1,     -1),
     ('Lv 0', 0,      10),
     ('Lv 1', 11,     100),
     ('Lv 2', 101,    200),

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 00:59:21
+# @LastEditTime : 2022-02-17 00:27:08
 # @Description  : 
 '''
 
@@ -36,7 +36,7 @@ def generate_help(cmd: Tuple[Tuple[Tuple[str, str]]]) -> str:
     for data in cmd:
         temp = []
         for (cmd,desc) in data:
-            temp.append(f'/{cmd} \\- {desc}')            
+            temp.append(f'/{cmd} - {desc}')            
             
         result.append('\n'.join(temp))
         
@@ -61,4 +61,4 @@ async def handle_help( message: Message):
     else:
         msg = CMD_HELP['NULL']
 
-    await message.reply(msg, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.reply(msg, parse_mode=ParseMode.MARKDOWN)

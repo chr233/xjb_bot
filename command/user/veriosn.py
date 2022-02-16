@@ -17,9 +17,9 @@ VER_MSG = escape_md(f'{BOT_NICK} Ver {VERSION} © 2022')
 
 async def handle_start(message: Message):
 
-    await message.reply(BOT_MSG, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.reply(BOT_MSG, parse_mode=ParseMode.MARKDOWN)
 
 
 async def handle_version(message: Message):
 
-    await message.reply(VER_MSG, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.reply(VER_MSG, parse_mode=ParseMode.MARKDOWN)

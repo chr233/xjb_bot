@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 13:09:55
+# @LastEditTime : 2022-02-16 19:17:35
 # @Description  : 用户投稿
 '''
 
@@ -34,8 +34,7 @@ class Post_Status(IntEnum):
     Rejected = 4   # 投稿未过审
     Accepted = 5   # 已过审并发布
     Wating = 6     # 已过审但是等待发布(色图排期)
-    Retract =7     # 已撤回
-
+    Retract = 7     # 已撤回
 
     @staticmethod
     def describe(value) -> str:
@@ -71,6 +70,8 @@ class Posts(Model):
 
     anymouse = fields.BooleanField(default=False)  # 是否匿名
 
+    forward = fields.BooleanField(default=False)  # 是否为转发
+
     poster: fields.ForeignKeyRelation["Users"] = fields.ForeignKeyField(
         model_name='models.Users', related_name='posts',
         on_delete=fields.CASCADE
@@ -87,8 +88,8 @@ class Posts(Model):
     caption = fields.CharField(max_length=255, default='')  # 文字说明
     raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
 
-    tags = fields.CharField(max_length=255, default='')  # 未发布前储存投稿人链接
-                                                         # 标签列表, 纯文本储存, 逗号分隔
+    tags = fields.IntField(default=0)  # 未发布前储存投稿人链接
+    # 标签列表, 纯文本储存, 逗号分隔
 
     files = custom_fields.FileObjField(default='')  # 文件列表
 
@@ -124,15 +125,6 @@ class PublicPosts(Model):
         model_name='models.Users', related_name='reviews',
         on_delete=fields.CASCADE
     )  # 审核人
-
-    # 评价
-    like = fields.IntField(default=0)  # 好评数
-    gress = fields.IntField(default=0)  # 生草数
-    mars = fields.IntField(default=0)  # 火星数
-    dislike = fields.IntField(default=0)  # 差评数
-
-    # rating_count = fields.IntField(default=0)  # 评价总数
-    # rating_score = fields.FloatField(default=0)  # 总评分
 
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)

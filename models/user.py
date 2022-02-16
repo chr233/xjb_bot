@@ -2,11 +2,14 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-26 01:04:38
+# @LastEditTime : 2022-02-17 00:06:24
 # @Description  : 用户信息
 '''
 
+from html import escape
+from urllib.parse import quote
 from aiogram.utils.markdown import escape_md
+
 from tortoise.models import Model
 from tortoise import fields
 
@@ -68,7 +71,20 @@ class Users(Model):
         table = "users"
 
     def __str__(self) -> str:
-        return f'@{self.id} | #{self.user_id} | {self.user_nick}'
+        return f'No.{self.id} | #{self.user_id} | {self.user_name} | {self.user_nick}'
 
-    def md_link(self)->str:
-        return f'[{escape_md(self.user_nick)}](https://t.me/{self.user_name})'
+    def tg_link(self) -> str:
+        if self.user_name:
+            return f'https://t.me/{self.user_name}'
+        else:
+            return f'tg://user?id={self.user_id}'
+
+    def html_link(self) -> str:
+        name = escape(self.user_nick)
+        url = quote(self.tg_link())
+        return f'<a href={url}>{name}</a>'
+
+    def md_link(self) -> str:
+        name = escape_md(self.user_nick)
+        url = escape_md(self.tg_link())
+        return f'[{name}]({url})'

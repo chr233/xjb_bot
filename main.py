@@ -2,18 +2,16 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-24 21:12:23
+# @LastEditTime : 2022-02-17 00:05:44
 # @Description  : 启动入口
 '''
 
 from loguru import logger
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from custom.error_handler import error_handler
 
-from middleware.log import LoggingMiddleware
 
 
 from config import CFG, Bot_Modes
@@ -28,6 +26,7 @@ from chat.post import setup as post_setup
 
 from middleware.user_login import UserLogin
 from middleware.largest_photo import LargestPhoto
+from middleware.log import LoggingMiddleware
 
 
 def main():
@@ -35,18 +34,14 @@ def main():
 
     bot = Bot(token=CFG.Bot_Token, proxy='socks5://127.0.0.1:1080')
 
-    if not CFG.Mongo:
-        if CFG.DEBUG_MODE:
-            storge = MemoryStorage()
-            logger.warning('Using Memory for storage.')
-        else:
-            storge = RedisStorage2(
-                state_ttl=3600, data_ttl=3600, bucket_ttl=3600,
-            )
-            logger.info('Using Redis for storage.')
+    if CFG.DEBUG_MODE:
+        storge = MemoryStorage()
+        logger.warning('Using Memory for storage.')
     else:
-        storge = MongoStorage(uri=CFG.Mongo_URL)
-        logger.info('Using Mongo for storage.')
+        storge = RedisStorage2(
+            state_ttl=3600, data_ttl=3600, bucket_ttl=3600,
+        )
+        logger.info('Using Redis for storage.')
 
     dispatcher = Dispatcher(bot, storage=storge)
 

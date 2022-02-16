@@ -2,18 +2,19 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 19:46:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 17:07:35
+# @LastEditTime : 2022-02-17 00:18:17
 # @Description  : 审核按钮
 '''
 
-from typing import Dict, List, Tuple
-from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon, InlineKeyboardMarkup
+from typing import List
 from loguru import logger
+from aiogram.types.inline_keyboard import InlineKeyboardMarkup
+from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon
 
-from utils.emojis import GHOST, SMILE, NO, YES, WATER, CHECK, UNCHECK
+from utils.emojis import NO, YES, CHECK, UNCHECK
 
-from models.tag import StaticTags
 from models.reason import Reasons
+from models.tag import NameSTags
 
 
 class ReviewPostKey():
@@ -25,67 +26,59 @@ class ReviewPostKey():
 class ReviewKeyboardsHelper():
     ready = False
 
-    __tags_short: List[Tuple[int, str]] = None
-    __tags_full: List[Tuple[int, str]] = None
-    __reason: List[str] = None
+    __reasons: List[str] = None
 
-    __buttons: List[Tuple[str, str]] = None
+    __buttons = [IKButon(f'{NO}拒绝', callback_data=ReviewPostKey.reject),
+                 IKButon(f'{YES}采用', callback_data=ReviewPostKey.accept)]
 
     def __init__(self) -> None:
         ...
 
-    async def get_tag(self, selected: int) -> str:
-        if not self.ready:
-            await self.prepare_modules()
-
-        if not selected or selected == 0:
-            return ''
-
-        tags = [
-            f'#{name}' for id, name in self.__tags_full if selected & id
-        ]
-
-        return ' '.join(tags)
-
     async def prepare_modules(self):
+        '''初始化模块'''
         reasons = await Reasons.all()
-        self.__reason = [reason.reason for reason in reasons]
-
-        self.__tags_short = [(x, y[0]) for x, y in StaticTags.items()]
-        self.__tags_full = [(x, y[1]) for x, y in StaticTags.items()]
-
-        self.__buttons = [
-            (f'{NO}拒绝', ReviewPostKey.reject), (f'{YES}采用', ReviewPostKey.accept)
-        ]
+        self.__reasons = [reason.reason for reason in reasons]
 
         logger.debug('初始化ReviewKeyboardsHelper完成')
 
         self.ready = True
 
-    async def get_tag_keyboard_short(self, selected: int):
+    @staticmethod
+    def tagid_fetch_button(tagnum: int) -> List[IKButon]:
+        '''根据标签id生成按钮'''
+        btns = []
+
+        for tagid, name_s in NameSTags:
+            if tagnum & tagid:
+                ico = CHECK
+            else:
+                ico = UNCHECK
+
+            btns.append(IKButon(f'{ico}{name_s}',
+                        callback_data=f'{ReviewPostKey.tag} {tagid}'))
+
+        return btns
+
+    async def gen_review_keyboard(self, tagnum: int):
+        '''获取审核键盘'''
         if not self.ready:
             await self.prepare_modules()
 
         kbd = [
-            [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
-                for id, name in self.__tags_short],
-            [IKButon(text, callback_data=f'{data} {selected}')
-                for text, data in self.__buttons]
+            self.tagid_fetch_button(tagnum),
+            self.__buttons
         ]
 
         return InlineKeyboardMarkup(inline_keyboard=kbd)
 
-    async def get_tag_keyboard_full(self, selected: int):
+    async def gen_reject_keyboard(self, tagnum: int):
+        '''获取拒稿键盘'''
         if not self.ready:
             await self.prepare_modules()
 
         kbd = [
-            [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{ReviewPostKey.tag} {selected ^ id}')
-                for id, name in self.__tags_full],
-            [IKButon(text, callback_data=f'{data} {selected}')
-                for text, data in self.__buttons]
+            self.tagid_fetch_button(tagnum),
+            self.__buttons
         ]
 
         return InlineKeyboardMarkup(inline_keyboard=kbd)

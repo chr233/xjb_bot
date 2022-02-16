@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 17:04:22
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 17:17:27
+# @LastEditTime : 2022-02-16 14:19:44
 # @Description  : 直发投稿
 '''
 
@@ -17,11 +17,9 @@ from models.reason import Reasons
 
 
 class DirectPostKey():
-    anymouse_on = 'dp_anymouse_on'      # 匿名模式
-    anymouse_off = 'dp_anymouse_off'    # 实名模式
+    anymouse_on = 'dp_anymouse'      # 匿名模式
     cancel = 'dp_cancel'                # 取消投稿
     post = 'dp_post'                    # 发布
-    post_anymouse = 'dp_post_anymouse'  # 发布(匿名模式)
     tag = 'dp_tag'  # 标签
 
 

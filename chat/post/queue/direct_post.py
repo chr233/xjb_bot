@@ -127,7 +127,7 @@ async def handle_direct_post_callback(query: CallbackQuery):
                         f'状态: `{status}`\n'
                         '更多帮助: /help'
                     ),
-                    parse_mode=ParseMode.MARKDOWN_V2,
+                    parse_mode=ParseMode.MARKDOWN,
                     reply_markup=keyboard
                 )
 
@@ -152,7 +152,7 @@ async def handle_direct_post_callback(query: CallbackQuery):
                         f'匿名: `{"是" if post.anymouse else "否"}`\n'
                         f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
                     ),
-                    parse_mode=ParseMode.MARKDOWN_V2
+                    parse_mode=ParseMode.MARKDOWN
                 )
 
                 await user.save()
@@ -166,7 +166,7 @@ async def handle_direct_post_callback(query: CallbackQuery):
                         f'稿件状态: `{str(Post_Status.Reviewing)}`\n'
                         f'采用数/总投稿: `{user.accept_count}` / `{user.post_count}`\n'
                     ),
-                    parse_mode=ParseMode.MARKDOWN_V2
+                    parse_mode=ParseMode.MARKDOWN
                 )
         else:
             await query.answer('未知操作')
@@ -275,7 +275,7 @@ async def handle_review_post_callback(query: CallbackQuery):
                 post_mid = await bot.send_message(
                     chat_id=CFG.Accept_Channel,
                     text=caption,
-                    parse_mode=ParseMode.MARKDOWN_V2,
+                    parse_mode=ParseMode.MARKDOWN,
                 )
 
             elif len(files) == 1:
@@ -287,7 +287,7 @@ async def handle_review_post_callback(query: CallbackQuery):
                         chat_id=CFG.Accept_Channel,
                         photo=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     )
 
                 elif ftype == 'video':
@@ -295,28 +295,28 @@ async def handle_review_post_callback(query: CallbackQuery):
                         chat_id=CFG.Accept_Channel,
                         video=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     )
                 elif ftype == 'audio':
                     post_mid =await bot.send_audio(
                         chat_id=CFG.Accept_Channel,
                         audio=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     )
                 elif ftype == 'document':
                     post_mid =await bot.send_document(
                         chat_id=CFG.Accept_Channel,
                         document=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     )
                 else:
                     post_mid = await bot.send_document(
                         chat_id=CFG.Accept_Channel,
                         document=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     )
 
             else:
@@ -327,7 +327,7 @@ async def handle_review_post_callback(query: CallbackQuery):
                         type=file.file_type,
                         media=file.file_id,
                         caption=caption,
-                        parse_mode=ParseMode.MARKDOWN_V2
+                        parse_mode=ParseMode.MARKDOWN
                     ))
                     caption = None
 

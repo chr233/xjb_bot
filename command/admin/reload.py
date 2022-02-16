@@ -2,13 +2,15 @@
 # @Author       : Chr_
 # @Date         : 2021-11-02 13:26:30
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-12 14:01:36
+# @LastEditTime : 2022-02-16 12:51:19
 # @Description  : 重置user_login模块
 '''
 
 from aiogram.dispatcher import Dispatcher
 from aiogram.types.message import Message, ParseMode
 from aiogram.types import Chat
+
+from aiogram.utils.markdown import escape_md
 
 from config import CFG
 
@@ -26,7 +28,10 @@ async def handle_reload(message: Message):
 
 
 def md_link(chat: Chat) -> str:
-    return f'[{chat.title} @{chat.username}](https://t.me/{chat.username})'
+    title = escape_md(chat.title)
+    user_name = escape_md(chat.username)
+    
+    return f'[{title} @{user_name}](https://t.me/{user_name})'
 
 
 async def handle_get_chat_id(message: Message):
@@ -41,4 +46,4 @@ async def handle_get_chat_id(message: Message):
             f'拒稿频道: {md_link(rc)}\n'
             f'审核群组: {md_link(rg)}\n'
         ),
-        parse_mode=ParseMode.MARKDOWN_V2)
+        parse_mode=ParseMode.MARKDOWN)

@@ -3,7 +3,7 @@
 # @Author       : Chr_
 # @Date         : 2021-03-13 19:34:20
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-25 00:19:38
+# @LastEditTime : 2022-02-16 12:29:21
 # @Description  : 全局配置
 '''
 
@@ -27,10 +27,6 @@ class Config(BS):
     DEBUG_MODE: bool = False
 
     DB_URL: str = 'sqlite://data.db'
-
-    Mongo: bool = False
-
-    Mongo_URL: str = None
 
     Generate_Schemas: bool = False
 

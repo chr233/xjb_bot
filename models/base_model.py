@@ -2,9 +2,13 @@
 # @Author       : Chr_
 # @Date         : 2021-11-01 15:02:02
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-11-26 00:42:08
+# @LastEditTime : 2022-02-16 23:50:18
 # @Description  : 基础数据类型
 '''
+
+from html import escape
+from urllib.parse import quote
+from aiogram.utils.markdown import escape_md,quote_html
 
 from pydantic import BaseModel
 
@@ -30,9 +34,19 @@ class SourceLink(BaseModel):
     '''
     name: str = ''  # 显示名称
     url: str = ''  # 链接名
-    # 频道链接 https://t.me/{username}/{forward_from_nessage_id}
-    # 用户链接 https://t.me/{username}
+    # 频道链接 https://t.me/{user_name}/{forward_from_nessage_id}
+    # 用户链接 https://t.me/{user_name}
     # 另一种用户链接 tg://user?id={user_id}
 
     def __str__(self) -> str:
         return f'{self.name} {self.url}'
+
+    def html_link(self) -> str:
+        name = self.name
+        url = self.url
+        return quote_html(f'<a href={url}>{name}</a>')
+
+    def md_link(self) -> str:
+        name = escape_md(self.name)
+        url = escape_md(self.url)
+        return f'[{name}]({url})'
