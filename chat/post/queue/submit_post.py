@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:25:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 00:25:31
+# @LastEditTime : 2022-02-17 02:11:37
 # @Description  : 
 '''
 
@@ -10,7 +10,7 @@
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
-from aiogram.utils.markdown import escape_md,quote_html
+from aiogram.utils.markdown import escape_md, quote_html
 
 from loguru import logger
 
@@ -50,10 +50,18 @@ async def handle_submit_post_callback(query: CallbackQuery):
     elif post.status != Post_Status.Padding:
         # 投稿已经被处理
         await query.answer('请不要重复操作')
-        status = Post_Status.describe(Post_Status.Reviewing)
+        status = Post_Status.describe(post.status)
+
+        text = (
+            f'稿件状态: `{status}`\n'
+            '更多帮助: /help'
+        )
+
         await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg_id,
+            text=text,
+            parse_mode=ParseMode.MARKDOWN,
             reply_markup=None
         )
         return
@@ -75,17 +83,20 @@ async def handle_submit_post_callback(query: CallbackQuery):
         elif data == SubmitPostKey.cancel:
             # 取消投稿
             await query.answer('投稿已取消')
-            await bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=msg_id,
-                text='投稿已取消',
-            )
+
             post.update_from_dict({
                 'caption': '',
                 'status': Post_Status.Cancel,
                 'source': '',
                 'files': ''
             })
+            await post.save()
+
+            await bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=msg_id,
+                text='投稿已取消',
+            )
 
         elif data == SubmitPostKey.post:
             # 投稿
@@ -131,7 +142,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
             nm = "是" if anymouse else "否"
 
             text = (
-                f'投稿人: {user.md_link()}\n'
+                f'投稿人: {user.md_link()}\n\n'
                 f'状态: `{status}`\n'
                 f'匿名: `{nm}`\n'
                 '更多帮助: /help'
@@ -159,13 +170,13 @@ async def handle_submit_post_callback(query: CallbackQuery):
             user.post_count += 1
             await user.save()
 
-            text=(
-                    f'状态: `{status}`\n'
-                    f'匿名: `{nm}`\n'
-                    f'采用数: `{user.accept_count}`\n'
-                    f'总投稿: `{user.post_count}`\n'
-                    '更多帮助: /help'
-                )
+            text = (
+                f'状态: `{status}`\n'
+                f'匿名: `{nm}`\n'
+                f'采用数: `{user.accept_count}`\n'
+                f'总投稿: `{user.post_count}`\n'
+                '更多帮助: /help'
+            )
 
             await bot.edit_message_text(
                 chat_id=chat_id,

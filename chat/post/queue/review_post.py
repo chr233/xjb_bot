@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:23
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 00:57:23
+# @LastEditTime : 2022-02-17 02:11:29
 # @Description  : 
 '''
 
@@ -11,6 +11,7 @@ from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
 from aiogram.utils.markdown import escape_md
+from loguru import logger
 from buttons.review import RKH, ReviewPostKey
 
 from models.post import Posts, Post_Status, PublicPosts
@@ -47,10 +48,21 @@ async def handle_review_post_callback(query: CallbackQuery):
     elif post.status != Post_Status.Reviewing:
         # 投稿已经被处理
         await query.answer('请不要重复操作')
+
+        status = Post_Status.describe(post.status)
+
+        text = (
+            f'稿件状态: `{status}`\n'
+            '更多帮助: /help'
+        )
+
         await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg_id,
-            reply_markup=None
+            text=text,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=None,
+
         )
         return
 
@@ -76,9 +88,28 @@ async def handle_review_post_callback(query: CallbackQuery):
 
         elif data == ReviewPostKey.reject:
             # 拒绝稿件
-            
-            await post.save()
+
             return
+
+            # TODO
+
+            post.update_from_dict({
+                'caption': '',
+                'status': Post_Status.Cancel,
+                'source': '',
+                'files': ''
+            })
+            await post.save()
+
+            p_user = await post.poster.get()
+            p_user.reject_count += 1
+            await p_user.save()
+
+            if(user.id == p_user.id):
+                user = p_user
+
+            user.review_count += 1
+            await user.save()
 
             # await RejectPosts.create(
             #     post = post,
@@ -104,16 +135,16 @@ async def handle_review_post_callback(query: CallbackQuery):
 
             source = post.source
             anymouse = post.anymouse
-            
+
             s_link = source.md_link()
             u_link = user.md_link()
-            
+
             if post.forward:
                 if not anymouse:
                     post_caption.append(f'from {s_link} via {u_link}')
                 else:
                     post_caption.append(f'from {s_link}')
-                                           
+
             elif not anymouse:
                 post_caption.append(f'via {u_link} ')
 
@@ -191,7 +222,8 @@ async def handle_review_post_callback(query: CallbackQuery):
                 # post_mid = post_mids[0]
 
             post.status = Post_Status.Accepted
-    
+            await post.save()
+
             await PublicPosts.create(
                 message_id=post_mid.message_id,
                 post=post,
@@ -201,9 +233,52 @@ async def handle_review_post_callback(query: CallbackQuery):
             p_user = await post.poster.get()
             p_user.accept_count += 1
             await p_user.save()
-            
+
             if(user.id == p_user.id):
                 user = p_user
 
-        user.review_count += 1
-        await user.save()
+            user.review_count += 1
+            await user.save()
+
+            status = Post_Status.describe(Post_Status.Accepted)
+            nm = "是" if anymouse else "否"
+
+            try:
+                # 修改投稿人提示
+                text = (
+                    f'状态: `{status}`\n'
+                    f'匿名: `{nm}`\n'
+                    f'采用数: `{p_user.accept_count}`\n'
+                    f'总投稿: `{p_user.post_count}`\n'
+                    '更多帮助: /help'
+                )
+                await bot.edit_message_text(
+                    text=text,
+                    chat_id=post.origin_cid,
+                    message_id=post.action_mid,
+                    parse_mode=ParseMode.MARKDOWN,
+                    reply_markup=None
+                )
+            except Exception as e:
+                logger.error(e)
+
+            try:
+                # 修改审核提示
+                text = (
+                    f'投稿人: {p_user.md_link()}\n'
+                    f'审核人: {user.md_link()}\n'
+                    f'状态: `{status}`\n'
+                    f'总审核: `{user.review_count}`\n'
+                    '更多帮助: /help'
+                )
+
+                await bot.edit_message_text(
+                    text=text,
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    parse_mode=ParseMode.MARKDOWN,
+                    reply_markup=None
+                )
+
+            except Exception as e:
+                logger.error(e)

@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-16 19:17:35
+# @LastEditTime : 2022-02-17 02:08:54
 # @Description  : 用户投稿
 '''
 
@@ -63,6 +63,7 @@ class Posts(Model):
 
     id = fields.IntField(pk=True)
 
+    origin_cid = fields.IntField()  # 投稿的原会话ID
     origin_mid = fields.IntField(unique=True, index=True)  # 投稿的原消息ID
     action_mid = fields.IntField(unique=True, index=True)  # 投稿动作消息ID
     review_mid = fields.IntField(unique=True, index=True)  # 审核群消息ID

@@ -2,88 +2,66 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 17:04:22
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-16 14:19:44
+# @LastEditTime : 2022-02-17 01:47:23
 # @Description  : 直发投稿
 '''
 
-from typing import Dict, List, Tuple
-from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon, InlineKeyboardMarkup
+from typing import List
 from loguru import logger
+from aiogram.types.inline_keyboard import InlineKeyboardMarkup
+from aiogram.types.inline_keyboard import InlineKeyboardButton as IKButon
 
-from utils.emojis import GHOST, SMILE, NO, YES, WATER, CHECK, UNCHECK
+from utils.emojis import GHOST, NO, SMILE, YES, CHECK, UNCHECK
 
-from models.tag import StaticTags
-from models.reason import Reasons
+
+from models.tag import NameSTags
 
 
 class DirectPostKey():
-    anymouse_on = 'dp_anymouse'      # 匿名模式
+    anymouse = 'dp_anymouse'      # 匿名模式
     cancel = 'dp_cancel'                # 取消投稿
     post = 'dp_post'                    # 发布
-    tag = 'dp_tag'  # 标签
+    tag = 'dp_tag'                   # 标签
 
 
 class DirectKeyboardsHelper():
-    ready = False
+    
+    
+    __buttons = [IKButon(f'{NO}取消', callback_data=DirectPostKey.cancel),
+                IKButon(f'{YES}发布', callback_data=DirectPostKey.post)]
 
-    __tags_short: List[Tuple[int, str]] = None
-    __tags_full: List[Tuple[int, str]] = None
+    __named = [IKButon(f'{SMILE}保留来源', callback_data=DirectPostKey.anymouse)]
+    __anymouse = [IKButon(f'{GHOST}匿名投稿', callback_data=DirectPostKey.anymouse)]
 
-    __buttons: List[Tuple[str, str]] = None
+
 
     def __init__(self) -> None:
         ...
 
-    async def get_tag(self, selected: int) -> str:
-        if not self.ready:
-            await self.prepare_modules()
+    @staticmethod
+    def tagid_fetch_button(tagnum: int) -> List[IKButon]:
+        '''根据标签id生成按钮'''
+        btns = []
 
-        if not selected or selected == 0:
-            return ''
+        for tagid, name_s in NameSTags:
+            if tagnum & tagid:
+                ico = CHECK
+            else:
+                ico = UNCHECK
 
-        tags = [
-            f'#{name}' for id, name in self.__tags_full if selected & id
-        ]
+            btns.append(IKButon(f'{ico}{name_s}',
+                        callback_data=f'{DirectPostKey.tag} {tagid}'))
 
-        return ' '.join(tags)
+        return btns
 
-    async def prepare_modules(self):
-        self.__tags_short = [(x, y[0]) for x, y in StaticTags.items()]
-        self.__tags_full = [(x, y[1]) for x, y in StaticTags.items()]
-
-        self.__buttons = [
-            (f'{NO}拒绝', DirectPostKey.reject), (f'{YES}采用', DirectPostKey.accept)
-        ]
-
-        logger.debug('初始化ReviewKeyboardsHelper完成')
-
-        self.ready = True
-
-    async def get_tag_keyboard_short(self, selected: int):
-        if not self.ready:
-            await self.prepare_modules()
+    def gen_direct_keyboard(self, tagnum: int, anymouse: bool = False):
+        '''获取审核键盘'''
 
         kbd = [
-            [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{DirectPostKey.tag} {selected ^ id}')
-                for id, name in self.__tags_short],
-            [IKButon(text, callback_data=f'{data} {selected}')
-                for text, data in self.__buttons]
-        ]
-
-        return InlineKeyboardMarkup(inline_keyboard=kbd)
-
-    async def get_tag_keyboard_full(self, selected: int):
-        if not self.ready:
-            await self.prepare_modules()
-
-        kbd = [
-            [IKButon((CHECK if selected & id else UNCHECK) + name,
-                     callback_data=f'{DirectPostKey.tag} {selected ^ id}')
-                for id, name in self.__tags_full],
-            [IKButon(text, callback_data=f'{data} {selected}')
-                for text, data in self.__buttons]
-        ]
+                self.tagid_fetch_button(tagnum),
+                self.__anymouse if anymouse else self.__named,
+                self.__buttons
+            ]
 
         return InlineKeyboardMarkup(inline_keyboard=kbd)
 
