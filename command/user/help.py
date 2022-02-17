@@ -14,7 +14,6 @@ from aiogram.types.message import Message, ParseMode
 from loguru import logger
 from .static import BOT_MSG, VER_MSG, CMD_HELP
 
-from config import VERSION, BOT_NICK
 
 __CMDs = {
     'USER': (

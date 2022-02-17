@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:25:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 02:11:37
+# @LastEditTime : 2022-02-17 09:14:44
 # @Description  : 
 '''
 
@@ -134,7 +134,7 @@ async def handle_submit_post_callback(query: CallbackQuery):
 
             tagnum = text_fatch_tagid(post.raw_caption)
 
-            kbd = await RKH.gen_review_keyboard(tagnum)
+            kbd = RKH.gen_review_keyboard(tagnum)
 
             status = Post_Status.describe(Post_Status.Reviewing)
 

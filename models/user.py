@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 00:06:24
+# @LastEditTime : 2022-02-17 08:59:52
 # @Description  : 用户信息
 '''
 
@@ -74,10 +74,7 @@ class Users(Model):
         return f'No.{self.id} | #{self.user_id} | {self.user_name} | {self.user_nick}'
 
     def tg_link(self) -> str:
-        if self.user_name:
-            return f'https://t.me/{self.user_name}'
-        else:
-            return f'tg://user?id={self.user_id}'
+        return f'tg://user?id={self.user_id}'
 
     def html_link(self) -> str:
         name = escape(self.user_nick)

@@ -1,27 +1,28 @@
 '''
 # @Author       : Chr_
-# @Date         : 2022-02-12 19:24:23
+# @Date         : 2022-02-17 09:59:40
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:03:42
+# @LastEditTime : 2022-02-17 10:15:33
 # @Description  : 
 '''
 
+from html import escape
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
+from aiogram.utils.markdown import escape_md
 from loguru import logger
-from buttons.review import RKH, ReviewPostKey
+from buttons.reject import RJKH, RejectPostKey
 
-from models.post import Posts, Post_Status, PublicPosts
+from models.post import Posts, Post_Status, RejectPosts
 
 from config import CFG
 from utils.fetch_tags import str_fetch_tagid, tagid_fetch_text
-from states.reject_reason import RejectForm
 
 
-async def handle_review_post_callback(query: CallbackQuery):
+async def handle_reject_post_callback(query: CallbackQuery):
     '''
-    投稿审核按钮回调
+    投稿拒稿按钮回调
     '''
     bot = query.bot
     msg = query.message
@@ -77,7 +78,7 @@ async def handle_review_post_callback(query: CallbackQuery):
             post.tags = tagnum
             await post.save()
 
-            kbd = RKH.gen_review_keyboard(tagnum)
+            kbd = RJKH.gen_review_keyboard(tagnum)
 
             await bot.edit_message_reply_markup(
                 chat_id=chat_id,
@@ -88,8 +89,6 @@ async def handle_review_post_callback(query: CallbackQuery):
         elif data == ReviewPostKey.reject:
             # 拒绝稿件
 
-            await RejectForm.reason.set()
-            
             return
 
             # TODO

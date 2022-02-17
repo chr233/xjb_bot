@@ -2,32 +2,40 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:23:56
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-15 13:54:53
+# @LastEditTime : 2022-02-17 10:09:45
 # @Description  : 处理消息
 '''
 
-
-from email import message
-import imp
 from typing import List
 from loguru import logger
 from aiogram.types.message import ContentType, Message
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher.filters import ChatTypeFilter, MediaGroupFilter
 from aiogram.dispatcher.handler import CancelHandler
+from aiogram.dispatcher.storage import FSMContext
 
+from .reject_reason import handle_custom_reject_reason
 from .file_post import handle_file_post
 from .media_post import handle_media_post
 from .text_post import handle_text_message
 
+
 from controller.permission import msg_need_permission, Permissions
 from custom.media_group_handler import media_group_handler
+from states.reject_reason import RejectForm
 
 
 async def setup(dp: Dispatcher, *args, **kwargs):
+
+    # 处理自定义拒稿原因
+    @dp.message_handler(state=RejectForm.reason, content_types=ContentType.TEXT)
+    @msg_need_permission(permission=Permissions.ReviewPost)
+    async def _(message: Message, state: FSMContext):
+        await handle_custom_reject_reason(message)
+
     # 处理文字消息处理
     @dp.message_handler(ChatTypeFilter('private'), content_types=ContentType.TEXT)
-    @msg_need_permission(permission=Permissions.Cmd)
+    @msg_need_permission(permission=Permissions.Post)
     async def _(message: Message):
         if message.text.startswith('/'):
             await message.reply('未知命令, 请使用 /help 查看帮助')
@@ -40,7 +48,7 @@ async def setup(dp: Dispatcher, *args, **kwargs):
     @msg_need_permission(permission=Permissions.Post)
     async def _(message: Message):
         content_type = message.content_type
-        
+
         if content_type in ['video', 'voice', 'photo']:
             await handle_media_post([message])
         elif content_type == 'document':
