@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-11-03 19:46:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:19:56
+# @LastEditTime : 2022-02-18 00:05:46
 # @Description  : 拒稿按钮
 '''
 
@@ -21,6 +21,7 @@ from models.tag import NameSTags
 class RejectPostKey():
     back = 'rj_back'      # 返回上级
     rejecj = 'rj_reject'  # 拒绝投稿
+    custome = 'rj_custome'  # 自定义拒稿理由
 
 
 class RejectKeyboardsHelper():
@@ -54,7 +55,7 @@ class RejectKeyboardsHelper():
                 ico = UNCHECK
 
             btns.append(IKButon(f'{ico}{name_s}',
-                        callback_data=f'{ReviewPostKey.tag} {tagid}'))
+                        callback_data=f'{RejectPostKey.tag} {tagid}'))
 
         return btns
 

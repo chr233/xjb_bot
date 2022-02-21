@@ -2,14 +2,14 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:01
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:10:34
+# @LastEditTime : 2022-02-19 10:52:19
 # @Description  : 处理回调
 '''
 
 from aiogram.types import CallbackQuery
-from aiogram.dispatcher import  Dispatcher,FSMContext
+from aiogram.dispatcher import Dispatcher, FSMContext
 
-from controller.permission import  query_need_permission, Permissions
+from controller.permission import query_need_permission, Permissions
 
 
 from .submit_post import handle_submit_post_callback

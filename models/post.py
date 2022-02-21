@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 18:20:55
+# @LastEditTime : 2022-02-21 14:00:21
 # @Description  : 用户投稿
 '''
 
@@ -94,7 +94,8 @@ class Posts(Model):
 
     files = custom_fields.FileObjField(default='')  # 文件列表
 
-    source = custom_fields.LinkObjField(default='')  # 消息来源,为空代表消息来自投稿者
+    source_name = fields.CharField(max_length=255,default='')  # 消息来源名称
+    source_id = fields.CharField(max_length=255,default='')  # 消息来源链接
 
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)

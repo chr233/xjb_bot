@@ -2,17 +2,16 @@
 # @Author       : Chr_
 # @Date         : 2021-11-01 09:46:32
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-16 13:47:22
+# @LastEditTime : 2022-02-21 15:07:55
 # @Description  : 自定义orm字段
 '''
 
-import msgpack
 import rapidjson
 from pydantic import parse_obj_as
 from typing import Iterable, List, Union
 from tortoise.fields import TextField
 
-from models.base_model import FileObj, SourceLink
+from models.base_model import FileObj
 
 
 class FileObjField(TextField):
@@ -49,40 +48,6 @@ class FileObjField(TextField):
             raise ValueError(
                 f"Database value {value} can't unserialise to FileObj."
             )
-
-
-class LinkObjField(TextField):
-    """
-    使用TextField储存单个链接对象
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def to_db_value(self, value: Union[None, SourceLink], instance) -> str:
-        if not value:
-            return ''
-        else:
-            return rapidjson.dumps(value.dict())
-            # return msgpack.dumps(value.dict())
-
-    def to_python_value(self, value: Union[str, SourceLink]) -> Union[None, SourceLink]:
-        try:
-            if not value:
-                return None
-            else:
-                if isinstance(value, str):
-                    data = SourceLink.parse_raw(value)
-                elif isinstance(value, SourceLink):
-                    data = value
-                else:
-                    data = SourceLink.parse_obj(value)
-                return data
-        except Exception:
-            raise ValueError(
-                f"Database value {value} can't unserialise to SourceLink."
-            )
-
 
 class BadgesField(TextField):
     """

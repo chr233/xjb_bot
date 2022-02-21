@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-13 00:28:15
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 02:05:04
+# @LastEditTime : 2022-02-21 14:40:11
 # @Description  : 准备投稿
 '''
 
@@ -45,10 +45,10 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
         msg_id = msg.forward_from_message_id
         mention = forward_from.mention
         source = SourceLink(name=forward_from.full_name,
-                            url=f'https://t.me/{mention}/{msg_id}')
+                            id=f'{mention}/{msg_id}')
     else:
         forward = False
-        source = SourceLink(name=user.user_nick, url=user.tg_link())
+        source = SourceLink(name=user.user_nick, id=user.user_id)
 
     if not files:
         files = ''
@@ -66,7 +66,8 @@ async def pre_create_new_post(msg: Message, msg2: Message, files: List[FileObj] 
         caption=caption,
         raw_caption=raw_caption,
         tags=0,
-        source=source,
+        source_name=source.name,
+        source_id=source.id,
         files=files
     )
 
@@ -99,16 +100,16 @@ async def pre_direct_post(msg: Message, msg2: Message, files: List[FileObj] = No
         msg_id = msg.forward_from_message_id
         mention = forward_from.mention
         source = SourceLink(name=forward_from.full_name,
-                            url=f'https://t.me/{mention}/{msg_id}')
+                            id=f'{mention}/{msg_id}')
     else:
         forward = False
-        source = SourceLink(name=user.user_nick, url=user.tg_link())
+        source = SourceLink(name=user.user_nick, id=user.user_id)
 
     if not files:
         files = ''
 
     await Posts.create(
-        origin_cid = msg.chat.id,
+        origin_cid=msg.chat.id,
         origin_mid=msg.message_id,
         action_mid=msg2.message_id,
         review_mid=msg.message_id,

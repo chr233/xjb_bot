@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:23:56
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:09:45
+# @LastEditTime : 2022-02-20 21:21:19
 # @Description  : 处理消息
 '''
 
@@ -79,5 +79,5 @@ async def setup(dp: Dispatcher, *args, **kwargs):
             await handle_file_post(messages)
         else:
             logger.info(f'媒体类型: {content_type}')
-            await message.reply('暂不支持的投稿类型')
+            await msg.reply('暂不支持的投稿类型')
             raise CancelHandler()

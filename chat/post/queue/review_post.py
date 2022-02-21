@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:23
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:03:42
+# @LastEditTime : 2022-02-21 15:09:20
 # @Description  : 
 '''
 
@@ -11,6 +11,7 @@ from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
 from loguru import logger
 from buttons.review import RKH, ReviewPostKey
+from models.base_model import SourceLink
 
 from models.post import Posts, Post_Status, PublicPosts
 
@@ -89,7 +90,7 @@ async def handle_review_post_callback(query: CallbackQuery):
             # 拒绝稿件
 
             await RejectForm.reason.set()
-            
+
             return
 
             # TODO
@@ -134,7 +135,8 @@ async def handle_review_post_callback(query: CallbackQuery):
             if len(post_caption) > 0:
                 post_caption.append('')
 
-            source = post.source
+            source = SourceLink(name=post.source_name, id=post.source_id)
+
             anymouse = post.anymouse
 
             s_link = source.md_link()

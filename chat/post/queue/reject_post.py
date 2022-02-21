@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-17 09:59:40
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 10:15:33
+# @LastEditTime : 2022-02-21 15:06:42
 # @Description  : 
 '''
 
@@ -13,6 +13,7 @@ from aiogram.types.message import ParseMode
 from aiogram.utils.markdown import escape_md
 from loguru import logger
 from buttons.reject import RJKH, RejectPostKey
+from models.base_model import SourceLink
 
 from models.post import Posts, Post_Status, RejectPosts
 
@@ -133,7 +134,7 @@ async def handle_reject_post_callback(query: CallbackQuery):
             if len(post_caption) > 0:
                 post_caption.append('')
 
-            source = post.source
+            source = SourceLink(name=post.source_name, id=post.source_id)
             anymouse = post.anymouse
 
             s_link = source.md_link()

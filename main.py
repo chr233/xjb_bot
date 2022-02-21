@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 13:12:21
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 09:50:28
+# @LastEditTime : 2022-02-21 13:51:09
 # @Description  : 启动入口
 '''
 
@@ -32,7 +32,7 @@ from middleware.log import LoggingMiddleware
 def main():
     '''启动函数'''
 
-    bot = Bot(token=CFG.Bot_Token, proxy='socks5://127.0.0.1:1080')
+    bot = Bot(token=CFG.Bot_Token, proxy=CFG.PROXY)
 
     if CFG.DEBUG_MODE:
         storge = MemoryStorage()
@@ -47,7 +47,7 @@ def main():
 
     dispatcher.middleware.setup(UserLogin())
     # dispatcher.middleware.setup(LargestPhoto())
-    dispatcher.middleware.setup(LoggingMiddleware())
+    # dispatcher.middleware.setup(LoggingMiddleware())
     # dispatcher.register_errors_handler(error_handler)
 
     startups = [
