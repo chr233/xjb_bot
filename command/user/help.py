@@ -2,11 +2,10 @@
 # @Author       : Chr_
 # @Date         : 2021-10-29 18:12:45
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 00:27:08
+# @LastEditTime : 2022-02-21 16:08:46
 # @Description  : 
 '''
 
-from turtle import Turtle
 from typing import Tuple
 from aiogram import Dispatcher
 from aiogram.dispatcher.filters.builtin import Command

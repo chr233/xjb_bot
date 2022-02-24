@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-17 09:59:40
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-21 15:06:42
+# @LastEditTime : 2022-02-24 16:59:40
 # @Description  : 
 '''
 
@@ -12,13 +12,31 @@ from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
 from aiogram.utils.markdown import escape_md
 from loguru import logger
-from buttons.reject import RJKH, RejectPostKey
-from models.base_model import SourceLink
 
+
+from buttons.reject import RJKH, RejectPostKey
+from buttons.review import RKH
+from models.base_model import SourceLink
 from models.post import Posts, Post_Status, RejectPosts
+from models.user import Users
+from utils.fetch_tags import str_fetch_tagid, tagid_fetch_text
 
 from config import CFG
-from utils.fetch_tags import str_fetch_tagid, tagid_fetch_text
+
+
+async def reject_post(post: Posts, user: Users, reason: str):
+    '''拒绝稿件'''
+    await RejectPosts.create(
+        post=post,
+        reviewer=user,
+        reason=reason
+    )
+    
+    post.status = Post_Status.Rejected,
+        
+    await post.save()
+    
+
 
 
 async def handle_reject_post_callback(query: CallbackQuery):
@@ -71,25 +89,24 @@ async def handle_reject_post_callback(query: CallbackQuery):
         # 开始处理 data
         data = query.data
 
-        if data.startswith(ReviewPostKey.tag):
+        if data == RejectPostKey.back:
+            tagnum = post.tags
 
-            tag = str_fetch_tagid(data)
-
-            tagnum = post.tags ^ tag
-            post.tags = tagnum
-            await post.save()
-
-            kbd = RJKH.gen_review_keyboard(tagnum)
+            kbd = RKH.gen_review_keyboard(tagnum)
 
             await bot.edit_message_reply_markup(
                 chat_id=chat_id,
                 message_id=msg_id,
                 reply_markup=kbd
             )
+            return
 
-        elif data == ReviewPostKey.reject:
-            # 拒绝稿件
+        elif data == RejectPostKey.slience:
+            # 静默拒绝稿件
 
+            # RejectPosts.create()
+
+            
             return
 
             # TODO
@@ -118,7 +135,36 @@ async def handle_reject_post_callback(query: CallbackQuery):
 
             # )
 
-        elif data == ReviewPostKey.accept:
+        if data.startswith(RejectPostKey.rejecj):
+            # 拒绝稿件
+
+            reason = RJKH.str_fetch_reason(data)
+
+            if not reason:
+                await query.answer('拒绝理由不能为空!')
+                return
+
+            else:
+                ...
+                # await RejectPosts.create(
+
+                # )
+            await post.save()
+
+            kbd = RJKH.gen_review_keyboard(tagnum)
+
+            await bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=msg_id,
+                reply_markup=kbd
+            )
+            return
+
+        return
+
+        if False:
+            ...
+        elif data == RejectPostKey.back:
             # 接受稿件
 
             post_caption = []

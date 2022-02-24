@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:23
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-21 15:09:20
+# @LastEditTime : 2022-02-22 18:28:23
 # @Description  : 
 '''
 
@@ -10,6 +10,7 @@ from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.input_media import InputMedia, MediaGroup
 from aiogram.types.message import ParseMode
 from loguru import logger
+from buttons.reject import RJKH
 from buttons.review import RKH, ReviewPostKey
 from models.base_model import SourceLink
 
@@ -89,7 +90,14 @@ async def handle_review_post_callback(query: CallbackQuery):
         elif data == ReviewPostKey.reject:
             # 拒绝稿件
 
-            await RejectForm.reason.set()
+            kbd = RJKH.gen_reject_keyboard()
+
+            await bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=msg_id,
+                text=text,
+                reply_markup=kbd
+            )
 
             return
 

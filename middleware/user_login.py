@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-30 21:41:44
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-16 12:55:07
+# @LastEditTime : 2022-02-21 19:10:37
 # @Description  : 用户登录中间件
 '''
 
@@ -48,7 +48,7 @@ class UserLogin(BaseMiddleware):
         self.__rights = {x.id: x for x in rights}
         self.__badges = {x.id: x for x in badges}
 
-        logger.debug('初始化UserLogin完成')
+        logger.debug('初始化 UserLogin 完成')
 
         self.ready = True
 

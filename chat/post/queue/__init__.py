@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:24:01
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-19 10:52:19
+# @LastEditTime : 2022-02-22 10:47:17
 # @Description  : 处理回调
 '''
 
@@ -38,7 +38,7 @@ async def setup(dp: Dispatcher, *args, **kwargs):
         await handle_review_post_callback(callback_query)
 
     # 拒稿回调
-    @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('jp_'))
+    @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('rj_'))
     @query_need_permission(permission=Permissions.ReviewPost)
     async def _(callback_query: CallbackQuery):
         await handle_reject_post_callback(callback_query)

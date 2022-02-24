@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-16 14:21:15
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-16 21:10:47
+# @LastEditTime : 2022-02-22 18:20:08
 # @Description  : 
 '''
 
@@ -32,7 +32,7 @@ def tagid_fetch_text(tagnum: int) -> str:
     return ' '.join(tags)
 
 
-GRUB_TAGID = compile(r'\s(\d+)$')
+GRUB_TAGID = compile(r' (\d+)$')
 
 
 def str_fetch_tagid(text: str) -> int:

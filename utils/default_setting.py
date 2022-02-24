@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 23:22:58
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 09:03:22
+# @LastEditTime : 2022-02-21 19:14:11
 # @Description  : 初始化数据库
 '''
 
@@ -60,7 +60,7 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
         default_level.default = True
         await default_level.save()
 
-        logger.info(f'Create {len(levels)} levels')
+        logger.info(f'创建 {len(levels)} 个等级')
     else:
         default_level = default_level[0]
 
@@ -86,7 +86,7 @@ async def get_default_setting() -> Tuple[Levels, Rights]:
         default_right.default = True
         await default_right.save()
 
-        logger.info(f'Create {len(rights)} rights')
+        logger.info(f'创建 {len(rights)} 个权限组')
     else:
         default_right = default_right[0]
 

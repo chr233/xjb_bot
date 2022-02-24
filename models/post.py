@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-10-27 16:52:43
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-21 14:00:21
+# @LastEditTime : 2022-02-21 16:28:22
 # @Description  : 用户投稿
 '''
 
@@ -86,8 +86,8 @@ class Posts(Model):
         enum_type=Post_Types, default=Post_Types.Default
     )  # 稿件类型
 
-    caption = fields.CharField(max_length=255, default='')  # 文字说明
-    raw_caption = fields.CharField(max_length=255, default='')  # 投稿原文
+    caption = fields.TextField(max_length=2048, default='')  # 文字说明
+    raw_caption = fields.TextField(max_length=2048, default='')  # 投稿原文
 
     tags = fields.IntField(default=0)  # 未发布前储存投稿人链接
     # 标签列表, 纯文本储存, 逗号分隔

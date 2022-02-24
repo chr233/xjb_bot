@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2022-02-12 19:25:26
 # @LastEditors  : Chr_
-# @LastEditTime : 2022-02-17 01:45:48
+# @LastEditTime : 2022-02-21 16:29:07
 # @Description  : 处理
 '''
 
@@ -28,11 +28,11 @@ async def handle_text_message(message: Message):
     anymouse_mode = user.prefer_anymouse
 
     length = len(message.text)
-    if length > 255:
+    if length > 2048:
         text = (
             '投稿内容过长, 请考虑分段发送\n'
             f'当前长度: `{length}` 字\n'
-            '最大长度: `255` 字\n'
+            '最大长度: `2048` 字\n'
             '更多帮助: /help'
         )
         await message.reply(
